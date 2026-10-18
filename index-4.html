@@ -717,5 +717,111 @@ $("copyRefButton").onclick = async () => {
 loadStats();
 loadLeaderboard();
 </script>
+ <section id="maco-withdrawal" style="max-width:600px;margin:24px auto;padding:20px;border:1px solid #333;border-radius:16px;background:#111;color:#fff;font-family:Arial,sans-serif">
+  <h2>💰 Referral Withdrawals</h2>
+  <p>Minimum withdrawal: <strong>$10</strong></p>
+
+  <label for="maco-withdraw-amount">Amount (USD)</label>
+  <input id="maco-withdraw-amount" type="number" min="10" step="0.01" placeholder="10.00"
+    style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 16px">
+
+  <label for="maco-payment-wallet">Payment wallet address</label>
+  <input id="maco-payment-wallet" type="text" placeholder="0x..."
+    style="display:block;width:100%;box-sizing:border-box;padding:12px;margin:8px 0 16px">
+
+  <button id="maco-withdraw-button" type="button"
+    style="width:100%;padding:14px;border:0;border-radius:8px;background:#20c997;color:#000;font-weight:bold">
+    Request Withdrawal
+  </button>
+
+  <p id="maco-withdraw-status" role="status" style="overflow-wrap:anywhere"></p>
+</section>
+
+<script>
+document.getElementById("maco-withdraw-button").addEventListener("click", async () => {
+  const status = document.getElementById("maco-withdraw-status");
+  const button = document.getElementById("maco-withdraw-button");
+  const amount = Number(document.getElementById("maco-withdraw-amount").value);
+  const paymentWallet = document.getElementById("maco-payment-wallet").value.trim();
+
+  const walletProvider = window.ethereum;
+  if (!walletProvider) {
+    status.textContent = "Open this page in your wallet browser and connect your wallet.";
+    return;
+  }
+
+  if (!Number.isFinite(amount) || amount < 10) {
+    status.textContent = "Minimum withdrawal is $10.";
+    return;
+  }
+
+  if (!/^0x[a-fA-F0-9]{40}$/.test(paymentWallet)) {
+    status.textContent = "Enter a valid EVM payment wallet address.";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "Connecting wallet...";
+
+  try {
+    const accounts = await walletProvider.request({ method: "eth_requestAccounts" });
+    if (!accounts || !accounts.length) throw new Error("No wallet connected.");
+
+    const wallet = accounts[0];
+    const issuedAt = Date.now();
+    const nonce = crypto.randomUUID() + "-" + crypto.randomUUID();
+
+    const message = [
+      "MACO referral withdrawal request",
+      "Wallet: " + wallet.toLowerCase(),
+      "Amount USD: " + amount.toFixed(2),
+      "Payment wallet: " + paymentWallet.toLowerCase(),
+      "Issued at: " + issuedAt,
+      "Nonce: " + nonce
+    ].join("\n");
+
+    status.textContent = "Please sign the withdrawal request in your wallet...";
+    const signature = await walletProvider.request({
+      method: "personal_sign",
+      params: [message, wallet]
+    });
+
+    status.textContent = "Submitting request...";
+
+    const response = await fetch(
+      "https://gseachvpegtvnplsvfwo.supabase.co/functions/v1/request-referral-withdrawal",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT"
+        },
+        body: JSON.stringify({
+          wallet_address: wallet,
+          payment_wallet: paymentWallet,
+          amount_usd: amount,
+          issued_at: issuedAt,
+          nonce,
+          message,
+          signature
+        })
+      }
+    );
+
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.error || "Withdrawal request failed.");
+    }
+
+    status.textContent =
+      "Request #" + result.withdrawal_id +
+      " submitted successfully. Status: PENDING. Payment is manual.";
+  } catch (error) {
+    status.textContent = error.message || "Something went wrong.";
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
 </body>
 </html>
