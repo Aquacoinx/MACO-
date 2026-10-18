@@ -4,69 +4,150 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MACO Volume Arena</title>
+
 <style>
 :root {
-  --bg:#090e18; --panel:#131e30; --border:#2b3a50;
-  --text:#f5f7fb; --muted:#9cabc0; --gold:#f2c85b;
+  --bg:#090e18;
+  --panel:#131e30;
+  --border:#2b3a50;
+  --text:#f5f7fb;
+  --muted:#9cabc0;
+  --gold:#f2c85b;
 }
 * { box-sizing:border-box; }
 body {
-  margin:0; background:var(--bg); color:var(--text);
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
   font:15px/1.5 system-ui,Arial,sans-serif;
 }
-main { max-width:1050px; margin:auto; padding:18px 13px 40px; }
+main {
+  max-width:1050px;
+  margin:auto;
+  padding:18px 13px 40px;
+}
 header {
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px; flex-wrap:wrap;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
 }
 .brand { font-size:20px; font-weight:900; }
 .gold { color:var(--gold); }
 .muted,.small { color:var(--muted); }
 .small { font-size:12px; }
 .hero { padding:35px 0 20px; }
-.hero h1 { font-size:clamp(38px,8vw,65px); line-height:1.02; margin:10px 0; }
-.cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
-.card,.panel { background:var(--panel); border:1px solid var(--border); border-radius:15px; }
+.hero h1 {
+  font-size:clamp(38px,8vw,65px);
+  line-height:1.02;
+  margin:10px 0;
+}
+.cards {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+}
+.card,.panel {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:15px;
+}
 .card { padding:15px; }
-.label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; }
-.value { font-size:23px; font-weight:850; overflow-wrap:anywhere; }
+.label {
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.value {
+  font-size:23px;
+  font-weight:850;
+  overflow-wrap:anywhere;
+}
 .panel { margin-top:16px; overflow:hidden; }
 .panel-head {
-  padding:15px; border-bottom:1px solid var(--border);
-  display:flex; justify-content:space-between; align-items:center;
-  flex-wrap:wrap; gap:10px;
+  padding:15px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
 }
 .panel-body { padding:15px; }
 h2 { font-size:18px; margin:0; }
 button {
-  padding:10px 13px; border-radius:9px; border:1px solid var(--border);
-  background:#1b2a40; color:white; font-weight:750; cursor:pointer;
+  padding:10px 13px;
+  border-radius:9px;
+  border:1px solid var(--border);
+  background:#1b2a40;
+  color:white;
+  font-weight:750;
+  cursor:pointer;
 }
-button.primary,.active { background:var(--gold); color:#201a09; }
-button:disabled { opacity:.5; }
+button.primary,.active {
+  background:var(--gold);
+  color:#201a09;
+}
+button:disabled { opacity:.5; cursor:not-allowed; }
 input {
-  width:100%; padding:12px; border-radius:9px; border:1px solid var(--border);
-  background:#091321; color:white; font:inherit;
+  width:100%;
+  padding:12px;
+  border-radius:9px;
+  border:1px solid var(--border);
+  background:#091321;
+  color:white;
+  font:inherit;
 }
 .field { margin-bottom:13px; }
-.field label { display:block; margin-bottom:5px; font-size:12px; color:var(--muted); }
+.field label {
+  display:block;
+  margin-bottom:5px;
+  font-size:12px;
+  color:var(--muted);
+}
 .row { display:flex; gap:8px; }
 .row input { flex:1; min-width:0; }
 .tabs { display:flex; gap:6px; flex-wrap:wrap; }
 .notice,.success {
-  padding:12px; border-radius:9px; margin-bottom:13px; overflow-wrap:anywhere;
+  padding:12px;
+  border-radius:9px;
+  margin-bottom:13px;
+  overflow-wrap:anywhere;
 }
 .notice { background:#302615; color:#f5d98c; }
 .success { background:#102a20; color:#9df1c5; }
 .hidden { display:none!important; }
 .table-wrap { overflow-x:auto; }
 table { width:100%; border-collapse:collapse; min-width:540px; }
-th,td { text-align:left; padding:12px; border-bottom:1px solid var(--border); }
+th,td {
+  text-align:left;
+  padding:12px;
+  border-bottom:1px solid var(--border);
+}
 th { font-size:10px; color:var(--muted); }
-.wallet { font:12px monospace; overflow-wrap:anywhere; }
-.ref-cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:15px 0; }
-.ref-link { padding:13px; border:1px solid var(--border); border-radius:10px; overflow-wrap:anywhere; }
-footer { margin-top:20px; color:var(--muted); font-size:12px; }
+.wallet {
+  font:12px monospace;
+  overflow-wrap:anywhere;
+}
+.ref-cards {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin:15px 0;
+}
+.ref-link {
+  padding:13px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow-wrap:anywhere;
+}
+footer {
+  margin-top:20px;
+  color:var(--muted);
+  font-size:12px;
+}
 @media(max-width:650px) {
   .cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .ref-cards { grid-template-columns:1fr; }
@@ -74,8 +155,10 @@ footer { margin-top:20px; color:var(--muted); font-size:12px; }
 }
 </style>
 </head>
+
 <body>
 <main>
+
 <header>
   <div class="brand">Ⓜ <span class="gold">MACO</span> VOLUME ARENA</div>
   <span class="small">ROBINHOOD CHAIN · 4663</span>
@@ -84,14 +167,30 @@ footer { margin-top:20px; color:var(--muted); font-size:12px; }
 <section class="hero">
   <div class="gold small">TRADE FAIRLY · CLIMB THE RANKS</div>
   <h1>THE <span class="gold">$MACO</span><br>VOLUME ARENA</h1>
-  <p class="muted">Register your wallet, compete on recorded trading volume, and invite new traders through your referral link.</p>
+  <p class="muted">
+    Register your wallet, compete on recorded trading volume,
+    and invite new traders through your referral link.
+  </p>
 </section>
 
 <section class="cards">
-  <div class="card"><div class="label">Registered wallets</div><div class="value" id="walletCount">—</div></div>
-  <div class="card"><div class="label">Recorded volume</div><div class="value" id="totalVolume">$0.00</div></div>
-  <div class="card"><div class="label">Contest status</div><div class="value" id="contestStatus">Loading</div></div>
-  <div class="card"><div class="label">Network</div><div class="value">RH Chain</div><div class="small">Chain ID 4663</div></div>
+  <div class="card">
+    <div class="label">Registered wallets</div>
+    <div class="value" id="walletCount">—</div>
+  </div>
+  <div class="card">
+    <div class="label">Recorded volume</div>
+    <div class="value" id="totalVolume">$0.00</div>
+  </div>
+  <div class="card">
+    <div class="label">Contest status</div>
+    <div class="value" id="contestStatus">Loading</div>
+  </div>
+  <div class="card">
+    <div class="label">Network</div>
+    <div class="value">RH Chain</div>
+    <div class="small">Chain ID 4663</div>
+  </div>
 </section>
 
 <section class="panel">
@@ -112,289 +211,508 @@ footer { margin-top:20px; color:var(--muted); font-size:12px; }
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Rank</th><th>Wallet</th><th>Buy volume</th><th>Sell volume</th><th>Total volume</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Rank</th><th>Wallet</th><th>Buy volume</th>
+            <th>Sell volume</th><th>Total volume</th>
+          </tr>
+        </thead>
         <tbody id="leaderboardBody"></tbody>
       </table>
     </div>
   </div>
 
   <div class="panel-body hidden" id="registerPanel">
-    <div id="registerMessage" class="notice">Connect your wallet and sign the registration message. No transaction is sent.</div>
+    <div id="registerMessage" class="notice">
+      Connect your wallet and sign the registration message.
+      No transaction is sent.
+    </div>
+
     <button class="primary" id="connectButton">Connect wallet</button>
     <div class="small wallet" id="connectedWallet" style="margin:10px 0"></div>
 
-    <div class="field"><label for="xUsername">X username (optional)</label><input id="xUsername" placeholder="@username" maxlength="40"></div>
-    <div class="field"><label for="displayName">Display name (optional)</label><input id="displayName" placeholder="Your display name" maxlength="40"></div>
-    <div class="field"><label for="referralInput">Referral code (optional)</label><input id="referralInput" placeholder="Enter a referral code"></div>
+    <div class="field">
+      <label for="xUsername">X username (optional)</label>
+      <input id="xUsername" placeholder="@username" maxlength="40">
+    </div>
+
+    <div class="field">
+      <label for="displayName">Display name (optional)</label>
+      <input id="displayName" placeholder="Your display name" maxlength="40">
+    </div>
+
+    <div class="field">
+      <label for="referralInput">Referral code (optional)</label>
+      <input id="referralInput" placeholder="Enter a referral code">
+    </div>
+
     <button class="primary" id="registerButton" disabled>Register wallet</button>
-    <div class="small" style="margin-top:10px">Registration requires a wallet signature. Never share your seed phrase or private key.</div>
+    <div class="small" style="margin-top:10px">
+      Registration requires a wallet signature. Never share your seed phrase or private key.
+    </div>
   </div>
 
   <div class="panel-body hidden" id="refPanel">
-    <div id="refMessage" class="notice">Connect and register your wallet to view your referral details.</div>
+    <div id="refMessage" class="notice">
+      Connect your wallet to view your referral details.
+    </div>
+
     <div class="ref-cards">
-      <div class="card"><div class="label">Successful referrals</div><div class="value" id="refCount">—</div></div>
-      <div class="card"><div class="label">Referred trading volume</div><div class="value" id="refVolume">$0.00</div></div>
-      <div class="card"><div class="label">Recorded reward</div><div class="value" id="refRewards">$0.00</div></div>
+      <div class="card">
+        <div class="label">Successful referrals</div>
+        <div class="value" id="refCount">—</div>
+      </div>
+      <div class="card">
+        <div class="label">Referred trading volume</div>
+        <div class="value" id="refVolume">$0.00</div>
+      </div>
+      <div class="card">
+        <div class="label">Recorded reward</div>
+        <div class="value" id="refRewards">$0.00</div>
+      </div>
     </div>
 
     <div class="ref-link">
       <div class="label">Your referral link</div>
-      <div id="referralLink" style="margin:8px 0;overflow-wrap:anywhere">Register your wallet to get a link.</div>
+      <div id="referralLink" style="margin:8px 0;overflow-wrap:anywhere">
+        Register your wallet to get a link.
+      </div>
       <button id="copyRefButton" disabled>Copy referral link</button>
     </div>
 
     <div class="notice" style="margin-top:14px">
-      Referral records are displayed from the database. The 1% reward calculation and withdrawal processing must be enabled on the backend before earnings can be paid.
+      Referral records are read securely from the database.
+      Reward calculations and withdrawals must be enabled separately.
     </div>
 
     <h2 style="margin:18px 0 8px">Your referred wallets</h2>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Wallet</th><th>Recorded volume</th><th>Recorded reward</th></tr></thead>
-        <tbody id="referralsBody"><tr><td colspan="3">No referral data loaded.</td></tr></tbody>
+        <thead>
+          <tr><th>Wallet</th><th>Recorded volume</th><th>Recorded reward</th></tr>
+        </thead>
+        <tbody id="referralsBody">
+          <tr><td colspan="3">No referral data loaded.</td></tr>
+        </tbody>
       </table>
     </div>
 
     <h2 style="margin:18px 0 8px">Payout history</h2>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Requested</th><th>Amount</th><th>Status</th></tr></thead>
-        <tbody id="payoutsBody"><tr><td colspan="3">No payout data loaded.</td></tr></tbody>
+        <thead>
+          <tr><th>Requested</th><th>Amount</th><th>Status</th></tr>
+        </thead>
+        <tbody id="payoutsBody">
+          <tr><td colspan="3">No payout data loaded.</td></tr>
+        </tbody>
       </table>
     </div>
   </div>
 </section>
 
-<footer>MACO Volume Arena · Robinhood Chain (4663). Trading volume depends on indexed records.</footer>
+<footer>
+  MACO Volume Arena · Robinhood Chain (4663). Trading volume depends on indexed records.
+</footer>
 </main>
 
 <script>
+"use strict";
+
 const SUPABASE_URL = "https://gseachvpegtvnplsvfwo.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
 const REGISTER_FUNCTION = SUPABASE_URL + "/functions/v1/register-wallet-v2";
+const REFERRAL_FUNCTION = SUPABASE_URL + "/functions/v1/get-referral-stats";
 const CHAIN_ID_HEX = "0x1237";
-const SITE_URL = window.location.origin + window.location.pathname;
 
 let connectedAddress = null;
 let myReferralLink = "";
 let leaderboardRows = [];
 
 const $ = id => document.getElementById(id);
+
 const money = n => "$" + Number(n || 0).toLocaleString("en-US", {
-  minimumFractionDigits:2, maximumFractionDigits:2
+  minimumFractionDigits:2,
+  maximumFractionDigits:2
 });
+
 const shortWallet = w => w ? w.slice(0,6) + "…" + w.slice(-4) : "—";
 
-function showMessage(id,text,success=false) {
-  const el=$(id);
-  el.textContent=text;
-  el.className=success ? "success" : "notice";
+function showMessage(id, text, success=false) {
+  const el = $(id);
+  el.textContent = text;
+  el.className = success ? "success" : "notice";
 }
 
 async function rest(path) {
-  const r=await fetch(SUPABASE_URL+"/rest/v1/"+path,{
-    headers:{apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY}
+  const r = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: "Bearer " + SUPABASE_ANON_KEY
+    }
   });
-  const txt=await r.text();
-  if(!r.ok) throw new Error("Database request failed ("+r.status+").");
+
+  if (!r.ok) throw new Error("Database request failed (" + r.status + ").");
+
+  const txt = await r.text();
   return txt ? JSON.parse(txt) : [];
 }
 
 async function loadStats() {
   try {
-    const regs=await rest("maco_registrations?select=wallet_address");
-    $("walletCount").textContent=regs.length.toLocaleString();
-  } catch(e) { $("walletCount").textContent="—"; }
+    const regs = await rest("maco_registrations?select=wallet_address");
+    $("walletCount").textContent = regs.length.toLocaleString();
+  } catch(e) {
+    $("walletCount").textContent = "—";
+  }
 
   try {
-    const rows=await rest("maco_trade_volume?select=volume_usd");
-    $("totalVolume").textContent=money(rows.reduce((s,r)=>s+Number(r.volume_usd||0),0));
-  } catch(e) { $("totalVolume").textContent="—"; }
+    const rows = await rest("maco_trade_volume?select=volume_usd");
+    $("totalVolume").textContent =
+      money(rows.reduce((s,r) => s + Number(r.volume_usd || 0), 0));
+  } catch(e) {
+    $("totalVolume").textContent = "—";
+  }
 
   try {
-    const cfg=await rest("maco_contest_config?select=*");
-    if(!cfg.length) $("contestStatus").textContent="Not configured";
-    else {
-      const c=cfg[0], now=Date.now(), start=Date.parse(c.start_at||""), end=Date.parse(c.end_at||"");
-      $("contestStatus").textContent=start&&now<start?"Upcoming":end&&now>end?"Ended":start&&end?"Live":"Not configured";
+    const cfg = await rest("maco_contest_config?select=*");
+
+    if (!cfg.length) {
+      $("contestStatus").textContent = "Not configured";
+    } else {
+      const c = cfg[0];
+      const now = Date.now();
+      const start = Date.parse(c.start_at || "");
+      const end = Date.parse(c.end_at || "");
+
+      $("contestStatus").textContent =
+        start && now < start ? "Upcoming" :
+        end && now > end ? "Ended" :
+        start && end ? "Live" : "Not configured";
     }
-  } catch(e) { $("contestStatus").textContent="Unavailable"; }
+  } catch(e) {
+    $("contestStatus").textContent = "Unavailable";
+  }
 }
 
 async function loadLeaderboard() {
-  $("loadMessage").textContent="Loading leaderboard…";
+  $("loadMessage").textContent = "Loading leaderboard…";
+
   try {
-    const rows=await rest("maco_leaderboard?select=*");
-    leaderboardRows=rows.map(r=>{
-      const buy=Number(r.buy_volume_usd??r.buy_volume??r.total_buy_volume??0);
-      const sell=Number(r.sell_volume_usd??r.sell_volume??r.total_sell_volume??0);
+    const rows = await rest("maco_leaderboard?select=*");
+
+    leaderboardRows = rows.map(r => {
+      const buy = Number(r.buy_volume_usd ?? r.buy_volume ?? r.total_buy_volume ?? 0);
+      const sell = Number(r.sell_volume_usd ?? r.sell_volume ?? r.total_sell_volume ?? 0);
+
       return {
-        wallet:r.wallet_address??r.wallet??r.trader_wallet??"",
-        buy,sell,total:Number(r.total_volume_usd??r.total_volume??r.volume_usd??buy+sell)
+        wallet: r.wallet_address ?? r.wallet ?? r.trader_wallet ?? "",
+        buy,
+        sell,
+        total: Number(r.total_volume_usd ?? r.total_volume ?? r.volume_usd ?? buy + sell)
       };
-    }).sort((a,b)=>b.total-a.total);
+    }).sort((a,b) => b.total - a.total);
+
     renderLeaderboard();
-    $("loadMessage").textContent=rows.length?"Leaderboard loaded.":"No leaderboard entries yet.";
-    $("loadMessage").className=rows.length?"success":"notice";
+
+    $("loadMessage").textContent =
+      rows.length ? "Leaderboard loaded." : "No leaderboard entries yet.";
+    $("loadMessage").className = rows.length ? "success" : "notice";
   } catch(e) {
-    $("loadMessage").textContent="Could not load leaderboard. Check the existing view's public read permissions.";
-    $("leaderboardBody").innerHTML="";
+    $("loadMessage").textContent = "Could not load leaderboard. Check database permissions.";
+    $("leaderboardBody").innerHTML = "";
   }
 }
 
 function renderLeaderboard() {
-  const q=$("searchWallet").value.trim().toLowerCase();
-  const rows=leaderboardRows.filter(r=>String(r.wallet).toLowerCase().includes(q));
-  $("leaderboardBody").innerHTML=rows.map((r,i)=>
-    `<tr><td>${i+1}</td><td class="wallet">${shortWallet(r.wallet)}</td><td>${money(r.buy)}</td><td>${money(r.sell)}</td><td><strong>${money(r.total)}</strong></td></tr>`
+  const q = $("searchWallet").value.trim().toLowerCase();
+  const rows = leaderboardRows.filter(r =>
+    String(r.wallet).toLowerCase().includes(q)
+  );
+
+  $("leaderboardBody").innerHTML = rows.map((r,i) =>
+    `<tr>
+      <td>${i+1}</td>
+      <td class="wallet">${shortWallet(r.wallet)}</td>
+      <td>${money(r.buy)}</td>
+      <td>${money(r.sell)}</td>
+      <td><strong>${money(r.total)}</strong></td>
+    </tr>`
   ).join("") || '<tr><td colspan="5">No matching entries.</td></tr>';
 }
 
 function setTab(tab) {
-  ["board","register","ref"].forEach(t=>{
-    $(t+"Panel").classList.toggle("hidden",t!==tab);
-    $(t+"Tab").classList.toggle("active",t===tab);
+  ["board","register","ref"].forEach(t => {
+    $(t + "Panel").classList.toggle("hidden", t !== tab);
+    $(t + "Tab").classList.toggle("active", t === tab);
   });
-  $("sectionTitle").textContent=tab==="board"?"Volume leaderboard":tab==="register"?"Register wallet":"Referral dashboard";
-}
-$("boardTab").onclick=()=>setTab("board");
-$("registerTab").onclick=()=>setTab("register");
-$("refTab").onclick=()=>{setTab("ref");if(connectedAddress)loadReferralDashboard();};
-$("refreshButton").onclick=async()=>{await loadStats();await loadLeaderboard();};
-$("searchWallet").addEventListener("input",renderLeaderboard);
 
-const urlReferral=new URLSearchParams(location.search).get("ref");
-if(urlReferral) $("referralInput").value=urlReferral.trim().toUpperCase();
+  $("sectionTitle").textContent =
+    tab === "board" ? "Volume leaderboard" :
+    tab === "register" ? "Register wallet" :
+    "Referral dashboard";
+}
+
+$("boardTab").onclick = () => setTab("board");
+$("registerTab").onclick = () => setTab("register");
+$("refTab").onclick = async () => {
+  setTab("ref");
+  if (connectedAddress) await loadReferralDashboard();
+};
+$("refreshButton").onclick = async () => {
+  await loadStats();
+  await loadLeaderboard();
+};
+$("searchWallet").addEventListener("input", renderLeaderboard);
+
+const urlReferral = new URLSearchParams(location.search).get("ref");
+if (urlReferral) {
+  $("referralInput").value = urlReferral.trim().toUpperCase();
+}
 
 async function connectWallet() {
-  if(!window.ethereum) throw new Error("Open the site in a browser with your wallet enabled.");
-  const accounts=await window.ethereum.request({method:"eth_requestAccounts"});
-  if(!accounts?.length) throw new Error("No wallet selected.");
-  const chain=await window.ethereum.request({method:"eth_chainId"});
-  if(chain.toLowerCase()!==CHAIN_ID_HEX) {
+  if (!window.ethereum) {
+    throw new Error("Open this site in a browser with your wallet enabled.");
+  }
+
+  const accounts = await window.ethereum.request({
+    method:"eth_requestAccounts"
+  });
+
+  if (!accounts?.length) throw new Error("No wallet selected.");
+
+  const chain = await window.ethereum.request({method:"eth_chainId"});
+
+  if (chain.toLowerCase() !== CHAIN_ID_HEX) {
     await window.ethereum.request({
       method:"wallet_switchEthereumChain",
       params:[{chainId:CHAIN_ID_HEX}]
     });
   }
-  connectedAddress=accounts[0].toLowerCase();
-  $("connectedWallet").textContent="Connected: "+connectedAddress;
-  $("connectButton").textContent="Wallet connected";
-  $("registerButton").disabled=false;
-  showMessage("registerMessage","Wallet connected. Sign to register; no transaction is sent.",true);
-  await loadReferralDashboard();
+
+  connectedAddress = accounts[0].toLowerCase();
+  $("connectedWallet").textContent = "Connected: " + connectedAddress;
+  $("connectButton").textContent = "Wallet connected";
+  $("registerButton").disabled = false;
+
+  showMessage(
+    "registerMessage",
+    "Wallet connected. Sign to register; no transaction is sent.",
+    true
+  );
 }
 
-$("connectButton").onclick=async()=>{
-  try { await connectWallet(); }
-  catch(e) { showMessage("registerMessage",e.message||"Could not connect wallet."); }
+$("connectButton").onclick = async () => {
+  try {
+    await connectWallet();
+    await loadReferralDashboard();
+  } catch(e) {
+    showMessage("registerMessage", e.message || "Could not connect wallet.");
+  }
 };
 
-$("registerButton").onclick=async()=>{
-  if(!connectedAddress) return showMessage("registerMessage","Connect your wallet first.");
-  const btn=$("registerButton");
-  btn.disabled=true;btn.textContent="Registering…";
+$("registerButton").onclick = async () => {
+  if (!connectedAddress) {
+    return showMessage("registerMessage", "Connect your wallet first.");
+  }
+
+  const btn = $("registerButton");
+  btn.disabled = true;
+  btn.textContent = "Registering…";
 
   try {
-    const xUsername=$("xUsername").value.trim().replace(/^@/,"");
-    const displayName=$("displayName").value.trim();
-    const referralCode=$("referralInput").value.trim().toUpperCase();
-    const issuedAt=new Date().toISOString();
-    const nonce=crypto.randomUUID();
+    const xUsername = $("xUsername").value.trim().replace(/^@/, "");
+    const displayName = $("displayName").value.trim();
+    const referralCode = $("referralInput").value.trim().toUpperCase();
+    const issuedAt = new Date().toISOString();
+    const nonce = crypto.randomUUID();
 
-    const message=
-      `MACO Volume Arena registration\n`+
-      `Wallet: ${connectedAddress}\n`+
-      `X username: ${xUsername||""}\n`+
-      `Display name: ${displayName||""}\n`+
-      (referralCode?`Referral code: ${referralCode}\n`:"")+
-      `Issued at: ${issuedAt}\n`+
-      `Nonce: ${nonce}\n`+
+    const message =
+      `MACO Volume Arena registration\n` +
+      `Wallet: ${connectedAddress}\n` +
+      `X username: ${xUsername || ""}\n` +
+      `Display name: ${displayName || ""}\n` +
+      (referralCode ? `Referral code: ${referralCode}\n` : "") +
+      `Issued at: ${issuedAt}\n` +
+      `Nonce: ${nonce}\n` +
       `Chain ID: 4663`;
 
-    const signature=await window.ethereum.request({
+    const signature = await window.ethereum.request({
       method:"personal_sign",
-      params:[message,connectedAddress]
+      params:[message, connectedAddress]
     });
 
-    const resp=await fetch(REGISTER_FUNCTION,{
+    const resp = await fetch(REGISTER_FUNCTION, {
       method:"POST",
-      headers:{"Content-Type":"application/json","apikey":SUPABASE_ANON_KEY},
+      headers:{
+        "Content-Type":"application/json",
+        "apikey":SUPABASE_ANON_KEY
+      },
       body:JSON.stringify({
         wallet_address:connectedAddress,
         x_username:xUsername,
         display_name:displayName,
         referral_code:referralCode,
-        issued_at:issuedAt,nonce,message,signature
+        issued_at:issuedAt,
+        nonce,
+        message,
+        signature
       })
     });
 
-    const data=await resp.json();
-    if(!resp.ok||!data.success) throw new Error(data.error||"Registration failed.");
+    const data = await resp.json();
 
-    myReferralLink=data.referral_link||"";
-    $("referralLink").textContent=myReferralLink||"Referral link not returned.";
-    $("copyRefButton").disabled=!myReferralLink;
-    showMessage("registerMessage","Wallet registered successfully!",true);
-    showMessage("refMessage","Referral link created. Referral data will appear when available.",true);
-    await loadStats();
-    await loadReferralDashboard();
-    setTab("ref");
-  } catch(e) {
-    showMessage("registerMessage",e.message||"Registration failed. Please try again.");
-  } finally {
-    btn.disabled=false;btn.textContent="Register wallet";
-  }
-};
-
-$("copyRefButton").onclick=async()=>{
-  if(!myReferralLink) return;
-  try {
-    await navigator.clipboard.writeText(myReferralLink);
-    showMessage("refMessage","Referral link copied!",true);
-  } catch(e) {
-    showMessage("refMessage","Copy failed. Select and copy the link shown above.");
-  }
-};
-
-async function loadReferralDashboard() {
-  if(!connectedAddress) return;
-  try {
-    const codes=await rest("maco_referral_codes?wallet_address=eq."+encodeURIComponent(connectedAddress)+"&select=referral_code");
-    if(codes.length) {
-      myReferralLink=SITE_URL+"?ref="+encodeURIComponent(codes[0].referral_code);
-      $("referralLink").textContent=myReferralLink;
-      $("copyRefButton").disabled=false;
+    if (!resp.ok || !data.success) {
+      throw new Error(data.error || "Registration failed.");
     }
-  } catch(e) {}
 
-  try {
-    const refs=await rest("maco_referrals?referrer_wallet=eq."+encodeURIComponent(connectedAddress)+"&select=referred_wallet,total_volume_usd,reward_usd,created_at");
-    $("refCount").textContent=refs.length.toLocaleString();
-    $("refVolume").textContent=money(refs.reduce((s,r)=>s+Number(r.total_volume_usd||0),0));
-    $("refRewards").textContent=money(refs.reduce((s,r)=>s+Number(r.reward_usd||0),0));
-    $("referralsBody").innerHTML=refs.map(r=>
-      `<tr><td class="wallet">${shortWallet(r.referred_wallet)}</td><td>${money(r.total_volume_usd)}</td><td>${money(r.reward_usd)}</td></tr>`
-    ).join("")||'<tr><td colspan="3">No referrals recorded yet.</td></tr>';
-    showMessage("refMessage","Referral data loaded. Reward values are those currently stored in the database.",true);
+    myReferralLink = data.referral_link || "";
+    showMessage("registerMessage", "Wallet registered successfully!", true);
+
+    await loadStats();
+    setTab("ref");
+    await loadReferralDashboard();
+
   } catch(e) {
-    $("refCount").textContent="—";
-    $("refVolume").textContent="—";
-    $("refRewards").textContent="—";
-    $("referralsBody").innerHTML='<tr><td colspan="3">Referral records are not publicly readable. Database permissions may need configuration.</td></tr>';
-    showMessage("refMessage","Could not load referral records. Supabase permissions may need configuration.");
+    showMessage("registerMessage", e.message || "Registration failed.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Register wallet";
+  }
+};
+
+/*
+ * Secure referral dashboard.
+ * The wallet signs a short-lived message.
+ * The Supabase function verifies the signature and returns
+ * only the statistics belonging to that wallet.
+ */
+async function loadReferralDashboard() {
+  if (!connectedAddress) {
+    showMessage("refMessage", "Connect your wallet first.");
+    return;
   }
 
+  showMessage("refMessage", "Verifying wallet and loading referrals…");
+  $("refCount").textContent = "…";
+  $("refVolume").textContent = "…";
+  $("refRewards").textContent = "…";
+
   try {
-    const payouts=await rest("maco_referral_payouts?wallet_address=eq."+encodeURIComponent(connectedAddress)+"&select=amount_usd,status,requested_at&order=requested_at.desc");
-    $("payoutsBody").innerHTML=payouts.map(p=>
-      `<tr><td>${String(p.requested_at||"").slice(0,10)}</td><td>${money(p.amount_usd)}</td><td>${String(p.status||"")}</td></tr>`
-    ).join("")||'<tr><td colspan="3">No payout requests recorded.</td></tr>';
+    const issuedAt = String(Date.now());
+    const nonce = crypto.randomUUID();
+
+    const message =
+      `MACO referral stats\n` +
+      `Wallet: ${connectedAddress}\n` +
+      `Issued at: ${issuedAt}\n` +
+      `Nonce: ${nonce}`;
+
+    const signature = await window.ethereum.request({
+      method:"personal_sign",
+      params:[message, connectedAddress]
+    });
+
+    const response = await fetch(REFERRAL_FUNCTION, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "apikey":SUPABASE_ANON_KEY
+      },
+      body:JSON.stringify({
+        wallet_address:connectedAddress,
+        message,
+        signature
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Unable to load referral statistics.");
+    }
+
+    myReferralLink = data.referral_link || "";
+
+    $("referralLink").textContent =
+      myReferralLink || "Referral link unavailable.";
+
+    $("copyRefButton").disabled = !myReferralLink;
+
+    $("refCount").textContent = Number(data.total_referrals || 0).toLocaleString();
+    $("refVolume").textContent = money(data.referred_volume_usd);
+    $("refRewards").textContent = money(data.reward_usd);
+
+    const referrals = data.referrals || [];
+
+    $("referralsBody").innerHTML = referrals.map(r =>
+      `<tr>
+        <td class="wallet">${shortWallet(r.referred_wallet)}</td>
+        <td>${money(r.total_volume_usd)}</td>
+        <td>${money(r.reward_usd)}</td>
+      </tr>`
+    ).join("") || '<tr><td colspan="3">No referrals recorded yet.</td></tr>';
+
+    showMessage(
+      "refMessage",
+      "Referral information loaded successfully.",
+      true
+    );
+
   } catch(e) {
-    $("payoutsBody").innerHTML='<tr><td colspan="3">Payout history is not publicly readable.</td></tr>';
+    console.error("Referral dashboard error:", e);
+
+    showMessage(
+      "refMessage",
+      e.message || "Could not load referrals. Check the deployed function settings."
+    );
+
+    $("refCount").textContent = "—";
+    $("refVolume").textContent = "—";
+    $("refRewards").textContent = "—";
+
+    $("referralsBody").innerHTML =
+      '<tr><td colspan="3">Referral information could not be loaded.</td></tr>';
+  }
+
+  /*
+   * Payout history is optional and uses the existing REST endpoint.
+   * If database permissions prevent reading it, show a friendly message.
+   */
+  try {
+    const payouts = await rest(
+      "maco_referral_payouts?wallet_address=eq." +
+      encodeURIComponent(connectedAddress) +
+      "&select=amount_usd,status,requested_at&order=requested_at.desc"
+    );
+
+    $("payoutsBody").innerHTML = payouts.map(p =>
+      `<tr>
+        <td>${String(p.requested_at || "").slice(0,10)}</td>
+        <td>${money(p.amount_usd)}</td>
+        <td>${String(p.status || "")}</td>
+      </tr>`
+    ).join("") || '<tr><td colspan="3">No payout requests recorded.</td></tr>';
+
+  } catch(e) {
+    $("payoutsBody").innerHTML =
+      '<tr><td colspan="3">Payout history unavailable.</td></tr>';
   }
 }
+
+$("copyRefButton").onclick = async () => {
+  if (!myReferralLink) return;
+
+  try {
+    await navigator.clipboard.writeText(myReferralLink);
+    showMessage("refMessage", "Referral link copied!", true);
+  } catch(e) {
+    showMessage(
+      "refMessage",
+      "Copy failed. Select and copy the referral link displayed above."
+    );
+  }
+};
 
 loadStats();
 loadLeaderboard();
