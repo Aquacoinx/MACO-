@@ -270,7 +270,6 @@ footer {
     </div>
   </div>
 
-  <!-- LEADERBOARD -->
   <div class="panel-body" id="boardPanel">
     <div class="notice" id="loadMessage">Loading leaderboard…</div>
 
@@ -306,11 +305,9 @@ footer {
     </div>
   </div>
 
-  <!-- REGISTRATION -->
   <div class="panel-body hidden" id="registerPanel">
     <div id="registerMessage" class="notice">
-      Connect your wallet and sign the registration message.
-      No transaction is sent.
+      Checking wallet connection…
     </div>
 
     <button class="primary" id="connectButton">Connect wallet</button>
@@ -334,14 +331,14 @@ footer {
     <button class="primary" id="registerButton" disabled>Register wallet</button>
 
     <div class="small" style="margin-top:10px">
-      Registration requires a wallet signature. Never share your seed phrase or private key.
+      Registration requires a wallet signature. No transaction is sent.
+      Never share your seed phrase or private key.
     </div>
   </div>
 
-  <!-- REFERRAL DASHBOARD -->
   <div class="panel-body hidden" id="refPanel">
     <div id="refMessage" class="notice">
-      Connect your wallet to view your referral details.
+      Checking wallet connection…
     </div>
 
     <div class="ref-cards">
@@ -430,6 +427,7 @@ footer {
   MACO Volume Arena · Robinhood Chain (4663).
   Trading volume depends on indexed records.
 </footer>
+
 </main>
 
 <script>
@@ -451,10 +449,13 @@ const WITHDRAW_FUNCTION =
 const CHAIN_ID_HEX = "0x1237";
 
 let connectedAddress = null;
+let walletProvider = null;
 let myReferralLink = "";
 let leaderboardRows = [];
 let contestConfig = null;
 let referralLoadInProgress = false;
+let referralLoadAgain = false;
+let walletRestoreInProgress = false;
 
 const $ = id => document.getElementById(id);
 
@@ -481,6 +482,32 @@ function showMessage(id, text, success=false) {
   if (!el) return;
   el.textContent = text;
   el.className = success ? "success" : "notice";
+}
+
+/* DETECT OKX OR ANOTHER COMPATIBLE EVM WALLET */
+function getWalletProviders() {
+  const providers = [];
+
+  if (window.okxwallet &&
+      typeof window.okxwallet.request === "function") {
+    providers.push(window.okxwallet);
+  }
+
+  if (window.ethereum &&
+      typeof window.ethereum.request === "function") {
+    providers.push(window.ethereum);
+  }
+
+  if (window.ethereum && Array.isArray(window.ethereum.providers)) {
+    providers.push(...window.ethereum.providers);
+  }
+
+  return [...new Set(providers)];
+}
+
+function getActiveProvider() {
+  if (walletProvider) return walletProvider;
+  return getWalletProviders()[0] || null;
 }
 
 async function rest(path) {
@@ -510,6 +537,7 @@ async function postFunction(url, body) {
   });
 
   let data = {};
+
   try {
     data = await response.json();
   } catch (_) {}
@@ -531,7 +559,9 @@ async function loadStats() {
   }
 
   try {
-    const rows = await rest("maco_leaderboard?select=total_volume_usd,buy_volume_usd,sell_volume_usd");
+    const rows = await rest(
+      "maco_leaderboard?select=total_volume_usd,buy_volume_usd,sell_volume_usd"
+    );
 
     const total = rows.reduce((sum, row) => {
       const buy = Number(row.buy_volume_usd || 0);
@@ -568,11 +598,6 @@ async function loadStats() {
 
     const target = Number(contestConfig.target_volume_usd || 100000);
     $("targetText").textContent = "Target: " + money(target);
-
-    const deadline = contestConfig.registration_deadline;
-    if (deadline && now < Date.parse(deadline)) {
-      // Deadline retained for contest configuration.
-    }
   } catch (_) {
     $("contestStatus").textContent = "Unavailable";
   }
@@ -608,7 +633,9 @@ async function loadLeaderboard() {
         wallet: r.wallet_address ?? r.wallet ?? r.trader_wallet ?? "",
         buy,
         sell,
-        total: Number(r.total_volume_usd ?? r.total_volume ?? r.volume_usd ?? buy + sell)
+        total: Number(
+          r.total_volume_usd ?? r.total_volume ?? r.volume_usd ?? buy + sell
+        )
       };
     }).sort((a,b) => b.total - a.total);
 
@@ -662,8 +689,12 @@ $("registerTab").onclick = () => setTab("register");
 
 $("refTab").onclick = async () => {
   setTab("ref");
-  if (connectedAddress) await loadReferralDashboard();
-  else showMessage("refMessage", "Connect your wallet first.");
+
+  if (connectedAddress) {
+    await loadReferralDashboard();
+  } else {
+    showMessage("refMessage", "Connect your wallet first.");
+  }
 };
 
 $("refreshButton").onclick = async () => {
@@ -680,25 +711,25 @@ if (urlReferral) {
   $("referralInput").value = urlReferral.trim().toUpperCase();
 }
 
-/* ROBINHOOD CHAIN AND WALLET CONNECTION */
-async function ensureCorrectChain() {
-  if (!window.ethereum) {
-    throw new Error("Open this page in a browser with your wallet enabled.");
+/* ROBINHOOD CHAIN */
+async function ensureCorrectChain(provider = getActiveProvider()) {
+  if (!provider) {
+    throw new Error("Open this page in your wallet browser or connect a wallet.");
   }
 
-  let chain = await window.ethereum.request({method:"eth_chainId"});
+  let chain = await provider.request({method:"eth_chainId"});
 
-  if (chain.toLowerCase() === CHAIN_ID_HEX) return;
+  if (String(chain).toLowerCase() === CHAIN_ID_HEX) return;
 
   try {
-    await window.ethereum.request({
+    await provider.request({
       method:"wallet_switchEthereumChain",
       params:[{chainId:CHAIN_ID_HEX}]
     });
   } catch (error) {
     if (error.code !== 4902) throw error;
 
-    await window.ethereum.request({
+    await provider.request({
       method:"wallet_addEthereumChain",
       params:[{
         chainId:CHAIN_ID_HEX,
@@ -710,91 +741,200 @@ async function ensureCorrectChain() {
     });
   }
 
-  chain = await window.ethereum.request({method:"eth_chainId"});
+  chain = await provider.request({method:"eth_chainId"});
 
-  if (chain.toLowerCase() !== CHAIN_ID_HEX) {
+  if (String(chain).toLowerCase() !== CHAIN_ID_HEX) {
     throw new Error("Please switch to Robinhood Chain.");
   }
 }
 
-function updateConnectedUI(address) {
+/* UPDATE CONNECTED WALLET */
+function updateConnectedUI(address, provider = walletProvider) {
   connectedAddress = address ? address.toLowerCase() : null;
 
-  $("connectedWallet").textContent =
-    connectedAddress ? "Connected: " + connectedAddress : "";
+  if (address && provider) {
+    walletProvider = provider;
+  }
 
-  $("connectButton").textContent =
-    connectedAddress ? "Wallet connected" : "Connect wallet";
+  if (!address) {
+    walletProvider = null;
+    myReferralLink = "";
+    $("referralLink").textContent = "Connect your wallet to load your referral link.";
+    $("copyRefButton").disabled = true;
+    $("registerButton").disabled = true;
+    $("connectButton").textContent = "Connect wallet";
+    $("connectedWallet").textContent = "";
+    return;
+  }
 
-  $("registerButton").disabled = !connectedAddress;
+  $("connectedWallet").textContent = "Connected: " + address;
+  $("connectButton").textContent = "Wallet connected";
+  $("registerButton").disabled = false;
 }
 
+/* MANUAL CONNECTION */
 async function connectWallet() {
-  if (!window.ethereum) {
+  const providers = getWalletProviders();
+
+  if (!providers.length) {
     throw new Error("Open this site in a browser with your wallet enabled.");
   }
 
-  const accounts = await window.ethereum.request({
-    method:"eth_requestAccounts"
-  });
+  let lastError;
 
-  if (!accounts || !accounts.length) {
-    throw new Error("No wallet selected.");
+  for (const provider of providers) {
+    try {
+      const accounts = await provider.request({
+        method:"eth_requestAccounts"
+      });
+
+      if (!accounts || !accounts.length) continue;
+
+      walletProvider = provider;
+      updateConnectedUI(accounts[0], provider);
+
+      await ensureCorrectChain(provider);
+
+      showMessage(
+        "registerMessage",
+        "Wallet connected. You can now register.",
+        true
+      );
+
+      return;
+    } catch (error) {
+      lastError = error;
+
+      if (error.code === 4001) {
+        throw new Error("Wallet connection was cancelled.");
+      }
+    }
   }
 
-  await ensureCorrectChain();
-  updateConnectedUI(accounts[0]);
-
-  showMessage(
-    "registerMessage",
-    "Wallet connected. Sign to register; no transaction is sent.",
-    true
-  );
+  throw lastError || new Error("Could not connect wallet.");
 }
 
 $("connectButton").onclick = async () => {
   try {
     await connectWallet();
-  } catch (e) {
-    showMessage("registerMessage", e.message || "Could not connect wallet.");
+  } catch (error) {
+    showMessage(
+      "registerMessage",
+      error.message || "Could not connect wallet."
+    );
   }
 };
 
-/* AUTO-RECONNECT WITHOUT ASKING FOR A NEW CONNECTION */
+/* AUTO-RECONNECT
+   Uses eth_accounts, which checks existing wallet permission.
+   It does not repeatedly ask users to approve a new connection.
+*/
 async function restoreWalletConnection() {
-  if (!window.ethereum) return;
+  if (walletRestoreInProgress) return false;
+
+  walletRestoreInProgress = true;
 
   try {
-    const accounts = await window.ethereum.request({
-      method:"eth_accounts"
+    const delays = [0, 500, 1200, 2500];
+
+    for (const delay of delays) {
+      if (delay) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+
+      const providers = getWalletProviders();
+
+      for (const provider of providers) {
+        try {
+          const accounts = await provider.request({
+            method:"eth_accounts"
+          });
+
+          if (accounts && accounts.length) {
+            walletProvider = provider;
+            updateConnectedUI(accounts[0], provider);
+
+            showMessage(
+              "registerMessage",
+              "Wallet connection restored.",
+              true
+            );
+
+            return true;
+          }
+        } catch (_) {
+          /* Try another available provider. */
+        }
+      }
+    }
+
+    return false;
+  } finally {
+    walletRestoreInProgress = false;
+  }
+}
+
+/* RECONNECT WHEN THE PAGE OPENS OR RETURNS TO THE FOREGROUND */
+window.addEventListener("pageshow", () => {
+  restoreWalletConnection();
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    restoreWalletConnection();
+  }
+});
+
+window.addEventListener("focus", () => {
+  restoreWalletConnection();
+});
+
+/* WALLET EVENTS */
+function attachWalletListeners() {
+  for (const provider of getWalletProviders()) {
+    if (provider.__macoArenaListenersAttached) continue;
+
+    try {
+      Object.defineProperty(provider, "__macoArenaListenersAttached", {
+        value:true,
+        configurable:true
+      });
+    } catch (_) {}
+
+    if (typeof provider.on !== "function") continue;
+
+    provider.on("accountsChanged", accounts => {
+      if (accounts && accounts.length) {
+        walletProvider = provider;
+        updateConnectedUI(accounts[0], provider);
+
+        if (!$("refPanel").classList.contains("hidden")) {
+          loadReferralDashboard();
+        }
+      } else if (walletProvider === provider) {
+        updateConnectedUI(null);
+        showMessage("refMessage", "Wallet disconnected. Reconnect to continue.");
+        showMessage("withdrawMessage", "Connect your wallet to request a withdrawal.");
+      }
     });
 
-    if (accounts && accounts.length) {
-      updateConnectedUI(accounts[0]);
-      showMessage("registerMessage", "Wallet connection restored.", true);
-    }
-  } catch (_) {}
+    provider.on("chainChanged", chain => {
+      if (String(chain).toLowerCase() !== CHAIN_ID_HEX) {
+        showMessage("registerMessage", "Please switch to Robinhood Chain.");
+      } else {
+        showMessage("registerMessage", "Robinhood Chain detected.", true);
+      }
+    });
+
+    provider.on("connect", () => {
+      restoreWalletConnection();
+    });
+  }
 }
 
-if (window.ethereum) {
-  window.ethereum.on("accountsChanged", accounts => {
-    updateConnectedUI(accounts && accounts.length ? accounts[0] : null);
-
-    if (!connectedAddress) {
-      showMessage("refMessage", "Connect your wallet to view your referrals.");
-    }
-  });
-
-  window.ethereum.on("chainChanged", async chain => {
-    if (chain.toLowerCase() !== CHAIN_ID_HEX) {
-      showMessage("registerMessage", "Please switch to Robinhood Chain.");
-    }
-  });
-}
-
-/* WALLET REGISTRATION WITH REFERRAL SUPPORT */
+/* REGISTER WALLET */
 $("registerButton").onclick = async () => {
-  if (!connectedAddress) {
+  if (!connectedAddress || !getActiveProvider()) {
     showMessage("registerMessage", "Connect your wallet first.");
     return;
   }
@@ -804,7 +944,9 @@ $("registerButton").onclick = async () => {
   btn.textContent = "Registering…";
 
   try {
-    await ensureCorrectChain();
+    const provider = getActiveProvider();
+
+    await ensureCorrectChain(provider);
 
     const xUsername = $("xUsername").value.trim().replace(/^@/, "");
     const displayName = $("displayName").value.trim();
@@ -823,7 +965,7 @@ $("registerButton").onclick = async () => {
       "Nonce: " + nonce + "\n" +
       "Chain ID: 4663";
 
-    const signature = await window.ethereum.request({
+    const signature = await provider.request({
       method:"personal_sign",
       params:[message, connectedAddress]
     });
@@ -847,8 +989,11 @@ $("registerButton").onclick = async () => {
     setTab("ref");
     await loadReferralDashboard();
 
-  } catch (e) {
-    showMessage("registerMessage", e.message || "Registration failed.");
+  } catch (error) {
+    showMessage(
+      "registerMessage",
+      error.message || "Registration failed."
+    );
   } finally {
     btn.disabled = !connectedAddress;
     btn.textContent = "Register wallet";
@@ -857,10 +1002,13 @@ $("registerButton").onclick = async () => {
 
 /* REFERRAL DASHBOARD */
 async function loadReferralDashboard() {
-  if (!connectedAddress || !window.ethereum || referralLoadInProgress) {
-    if (!connectedAddress) {
-      showMessage("refMessage", "Connect your wallet first.");
-    }
+  if (!connectedAddress || !getActiveProvider()) {
+    showMessage("refMessage", "Connect your wallet first.");
+    return;
+  }
+
+  if (referralLoadInProgress) {
+    referralLoadAgain = true;
     return;
   }
 
@@ -873,22 +1021,29 @@ async function loadReferralDashboard() {
   $("refRewards").textContent = "…";
 
   try {
+    const provider = getActiveProvider();
+    const address = connectedAddress;
+
     const issuedAt = String(Date.now());
     const nonce = crypto.randomUUID();
 
     const message =
       "MACO referral stats\n" +
-      "Wallet: " + connectedAddress + "\n" +
+      "Wallet: " + address + "\n" +
       "Issued at: " + issuedAt + "\n" +
       "Nonce: " + nonce;
 
-    const signature = await window.ethereum.request({
+    const signature = await provider.request({
       method:"personal_sign",
-      params:[message, connectedAddress]
+      params:[message, address]
     });
 
+    if (address !== connectedAddress) {
+      throw new Error("Wallet changed. Please reload your referral information.");
+    }
+
     const data = await postFunction(REFERRAL_FUNCTION, {
-      wallet_address:connectedAddress,
+      wallet_address:address,
       message,
       signature
     });
@@ -919,15 +1074,25 @@ async function loadReferralDashboard() {
 
     showMessage("refMessage", "Referral information loaded successfully.", true);
 
-  } catch (e) {
-    showMessage("refMessage", e.message || "Could not load referrals.");
+  } catch (error) {
+    showMessage(
+      "refMessage",
+      error.message || "Could not load referrals."
+    );
+
     $("refCount").textContent = "—";
     $("refVolume").textContent = "—";
     $("refRewards").textContent = "—";
+
     $("referralsBody").innerHTML =
       '<tr><td colspan="3">Referral information could not be loaded.</td></tr>';
   } finally {
     referralLoadInProgress = false;
+
+    if (referralLoadAgain) {
+      referralLoadAgain = false;
+      loadReferralDashboard();
+    }
   }
 
   /* EXISTING PAYOUT HISTORY */
@@ -972,7 +1137,7 @@ $("copyRefButton").onclick = async () => {
 $("withdrawButton").onclick = async () => {
   const btn = $("withdrawButton");
 
-  if (!connectedAddress || !window.ethereum) {
+  if (!connectedAddress || !getActiveProvider()) {
     showMessage("withdrawMessage", "Connect your wallet first.");
     return;
   }
@@ -994,26 +1159,29 @@ $("withdrawButton").onclick = async () => {
   btn.textContent = "Submitting…";
 
   try {
-    await ensureCorrectChain();
+    const provider = getActiveProvider();
 
+    await ensureCorrectChain(provider);
+
+    const address = connectedAddress;
     const issuedAt = String(Date.now());
     const nonce = crypto.randomUUID() + "-" + crypto.randomUUID();
 
     const message =
       "MACO referral withdrawal request\n" +
-      "Wallet: " + connectedAddress.toLowerCase() + "\n" +
+      "Wallet: " + address.toLowerCase() + "\n" +
       "Amount USD: " + amount.toFixed(2) + "\n" +
       "Payment wallet: " + paymentWallet.toLowerCase() + "\n" +
       "Issued at: " + issuedAt + "\n" +
       "Nonce: " + nonce;
 
-    const signature = await window.ethereum.request({
+    const signature = await provider.request({
       method:"personal_sign",
-      params:[message, connectedAddress]
+      params:[message, address]
     });
 
     const result = await postFunction(WITHDRAW_FUNCTION, {
-      wallet_address:connectedAddress,
+      wallet_address:address,
       payment_wallet:paymentWallet,
       amount_usd:amount,
       issued_at:issuedAt,
@@ -1032,8 +1200,11 @@ $("withdrawButton").onclick = async () => {
 
     await loadReferralDashboard();
 
-  } catch (e) {
-    showMessage("withdrawMessage", e.message || "Withdrawal request failed.");
+  } catch (error) {
+    showMessage(
+      "withdrawMessage",
+      error.message || "Withdrawal request failed."
+    );
   } finally {
     btn.disabled = false;
     btn.textContent = "Request withdrawal";
@@ -1042,9 +1213,25 @@ $("withdrawButton").onclick = async () => {
 
 /* START PAGE */
 async function init() {
-  await loadStats();
-  await loadLeaderboard();
+  attachWalletListeners();
+
+  await Promise.all([
+    loadStats(),
+    loadLeaderboard()
+  ]);
+
   await restoreWalletConnection();
+
+  /* Some wallet browsers inject their provider after the page starts. */
+  setTimeout(() => {
+    attachWalletListeners();
+    restoreWalletConnection();
+  }, 1000);
+
+  setTimeout(() => {
+    attachWalletListeners();
+    restoreWalletConnection();
+  }, 3000);
 }
 
 init();
