@@ -1,10 +1,9 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>$MACO Magic Number Game</title>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#080d19;color:#fff;font-family:Arial,sans-serif}
@@ -13,7 +12,7 @@ header{padding:18px;border-bottom:1px solid #26334b;display:flex;justify-content
 .badge{font-size:11px;padding:7px 10px;border-radius:20px;background:#152a29;color:#55e6a5}
 main{max-width:600px;margin:auto;padding:20px 15px}
 .hero{text-align:center;padding:25px 10px}
-.hero h1{font-size:34px;margin:10px 0}
+.hero h1{font-size:32px;margin:10px 0}
 .hero h1 span{color:#55e6a5}
 .hero p,.muted{color:#a8b3c9;line-height:1.7}
 .prize{background:linear-gradient(135deg,#143a35,#14243c);border:1px solid #326b5b;border-radius:18px;padding:24px;text-align:center;margin:15px 0}
@@ -37,7 +36,6 @@ button:disabled{opacity:.5;cursor:not-allowed}
 footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
 </style>
 </head>
-
 <body>
 <header>
   <div class="logo">$MACO MAGIC</div>
@@ -47,7 +45,7 @@ footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
 <main>
   <section class="hero">
     <h1>Pick Your <span>Magic Number</span></h1>
-    <p>Choose a number from 1 to 10. Make a qualifying new $MACO purchase to enter.</p>
+    <p>Choose a number from 1 to 10 and submit a qualifying new $MACO purchase.</p>
   </section>
 
   <section class="prize">
@@ -61,7 +59,7 @@ footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
     <ol class="rules">
       <li>Make a new $MACO purchase worth at least $10.</li>
       <li>Enter the wallet that made the purchase.</li>
-      <li>Submit the transaction hash and choose a number from 1 to 10.</li>
+      <li>Submit its transaction hash and choose a number from 1 to 10.</li>
       <li>Each qualifying transaction can only be used once.</li>
       <li>After 11 verified entries, the pot closes.</li>
       <li>An exact guess wins. If nobody guesses exactly, the closest guess wins.</li>
@@ -69,22 +67,21 @@ footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
       <li>The winner receives $5 through manual payout.</li>
     </ol>
     <div class="notice">
-      Never share your seed phrase or private key. Only qualifying purchases verified by the backend count.
+      Never share your seed phrase or private key. Only purchases verified by the game backend qualify.
     </div>
   </section>
 
   <section class="card">
     <h2>Enter the Game</h2>
-
     <form id="entryForm">
-      <label for="wallet">Your wallet address</label>
-      <input id="wallet" type="text" placeholder="0x..." autocomplete="off" required>
+      <label for="wallet">Wallet address</label>
+      <input id="wallet" placeholder="0x..." autocomplete="off" required>
 
-      <label for="transaction">Purchase transaction hash</label>
-      <input id="transaction" type="text" placeholder="Paste transaction hash" autocomplete="off" required>
+      <label for="transaction">MACO purchase transaction hash</label>
+      <input id="transaction" placeholder="Paste transaction hash" autocomplete="off" required>
 
       <label>Choose your number</label>
-      <div class="numbers" id="numbers">
+      <div class="numbers">
         <button type="button" class="number" data-number="1">1</button>
         <button type="button" class="number" data-number="2">2</button>
         <button type="button" class="number" data-number="3">3</button>
@@ -98,7 +95,7 @@ footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
       </div>
 
       <label for="referral">Referral code (optional)</label>
-      <input id="referral" type="text" placeholder="Enter referral code if you have one">
+      <input id="referral" placeholder="Referral code, if any">
 
       <button class="primary" id="submitButton" type="submit">Submit Entry</button>
       <div id="message" class="status" role="status" aria-live="polite"></div>
@@ -108,11 +105,9 @@ footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
   <section class="card">
     <h2>Transparency</h2>
     <p class="status">
-      Entries are checked against recorded MACO purchases. Each pot requires 11 verified entries. The winner and payout status are recorded in the game database.
+      Purchases are checked by the backend. Each pot requires 11 verified entries. Winners are recorded, and payouts are made manually.
     </p>
-    <p class="status">
-      Wait for your entry confirmation. Submitting the form alone does not guarantee registration.
-    </p>
+    <p class="status">Wait for confirmation before assuming your entry is registered.</p>
   </section>
 </main>
 
@@ -125,32 +120,20 @@ footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
 "use strict";
 
 const SUPABASE_URL = "https://gseachvpegtvnplsvfwo.supabase.co";
-
-/*
-  IMPORTANT:
-  Insert the actual Supabase publishable/anon key here before launch.
-  Do not use a service-role or secret key in a public HTML file.
-*/
-const SUPABASE_ANON_KEY = "REPLACE_WITH_YOUR_ACTUAL_SUPABASE_PUBLISHABLE_KEY";
-
-const ENTRY_FUNCTION =
-  SUPABASE_URL + "/functions/v1/maco-magic-entry";
+const SUPABASE_ANON_KEY = "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
+const ENTRY_FUNCTION = SUPABASE_URL + "/functions/v1/maco-magic-entry";
 
 const $ = id => document.getElementById(id);
 let selectedNumber = null;
 
-function showMessage(message, isError = false) {
-  const element = $("message");
-  element.textContent = message;
-  element.className = isError ? "message error" : "message";
+function showMessage(text, error = false) {
+  $("message").textContent = text;
+  $("message").className = error ? "message error" : "message";
 }
 
 document.querySelectorAll(".number").forEach(button => {
   button.addEventListener("click", () => {
-    document.querySelectorAll(".number").forEach(item => {
-      item.classList.remove("selected");
-    });
-
+    document.querySelectorAll(".number").forEach(b => b.classList.remove("selected"));
     button.classList.add("selected");
     selectedNumber = Number(button.dataset.number);
   });
@@ -165,22 +148,17 @@ $("entryForm").addEventListener("submit", async event => {
   const submitButton = $("submitButton");
 
   if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
-    showMessage("Please enter a valid wallet address.", true);
+    showMessage("Enter a valid EVM wallet address.", true);
     return;
   }
 
-  if (!selectedNumber || selectedNumber < 1 || selectedNumber > 10) {
-    showMessage("Please choose a number from 1 to 10.", true);
+  if (!selectedNumber) {
+    showMessage("Choose a number from 1 to 10.", true);
     return;
   }
 
   if (!/^0x[a-fA-F0-9]{64}$/.test(transactionHash)) {
-    showMessage("Please enter a valid transaction hash.", true);
-    return;
-  }
-
-  if (SUPABASE_ANON_KEY.startsWith("REPLACE_")) {
-    showMessage("Game setup is incomplete. The Supabase public key must be configured before entries can be submitted.", true);
+    showMessage("Enter a valid transaction hash.", true);
     return;
   }
 
@@ -216,28 +194,20 @@ $("entryForm").addEventListener("submit", async event => {
       );
     }
 
-    let confirmation = "Your entry is confirmed.";
+    let message = "Entry confirmed.";
 
-    if (result.pot_number !== undefined) {
-      confirmation += " Pot #" + result.pot_number + ".";
-    }
-
+    if (result.entry_id) message += " Entry ID: " + result.entry_id + ".";
+    if (result.pot_number !== undefined) message += " Pot #" + result.pot_number + ".";
     if (result.entries_in_pot !== undefined) {
-      confirmation += " Entries in pot: " + result.entries_in_pot + "/11.";
+      message += " Entries: " + result.entries_in_pot + "/11.";
     }
+    if (result.pot_full) message += " Pot completed.";
 
-    if (result.pot_full) {
-      confirmation += " This pot is full.";
-    }
-
-    showMessage(confirmation);
+    showMessage(message);
     $("transaction").value = "";
 
   } catch (error) {
-    showMessage(
-      error.message || "Connection failed. Please try again.",
-      true
-    );
+    showMessage(error.message || "Connection failed. Please try again.", true);
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = "Submit Entry";
