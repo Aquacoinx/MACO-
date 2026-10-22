@@ -1,218 +1,545 @@
  <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>$MACO Magic Number Game</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#080d19;color:#fff;font-family:Arial,sans-serif}
-header{padding:18px;border-bottom:1px solid #26334b;display:flex;justify-content:space-between;align-items:center}
-.logo{font-size:21px;font-weight:bold;color:#55e6a5}
-.badge{font-size:11px;padding:7px 10px;border-radius:20px;background:#152a29;color:#55e6a5}
-main{max-width:600px;margin:auto;padding:20px 15px}
-.hero{text-align:center;padding:25px 10px}
-.hero h1{font-size:32px;margin:10px 0}
-.hero h1 span{color:#55e6a5}
-.hero p,.muted{color:#a8b3c9;line-height:1.7}
-.prize{background:linear-gradient(135deg,#143a35,#14243c);border:1px solid #326b5b;border-radius:18px;padding:24px;text-align:center;margin:15px 0}
-.amount{font-size:45px;font-weight:bold;color:#55e6a5;margin:8px}
-.card{background:#111a2b;border:1px solid #26334b;border-radius:15px;padding:20px;margin:17px 0}
-h2{font-size:20px;margin-top:0}
-.rules{padding-left:20px;color:#c1cadd;line-height:1.9;font-size:14px}
-label{display:block;margin:17px 0 7px;font-size:14px}
-input{width:100%;padding:13px;border:1px solid #34435e;border-radius:9px;background:#091120;color:white;font-size:15px}
-.numbers{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}
-.number{padding:14px 0;text-align:center;border:1px solid #34435e;background:#091120;border-radius:9px;cursor:pointer;color:white}
-.number.selected{background:#55e6a5;color:#07140f;border-color:#55e6a5;font-weight:bold}
-button{border:0;border-radius:9px;padding:14px;font-size:16px;font-weight:bold;cursor:pointer}
-.primary{width:100%;background:#55e6a5;color:#07140f;margin-top:20px}
-button:disabled{opacity:.5;cursor:not-allowed}
-.notice,.message{padding:13px;border-radius:9px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
-.notice{background:#282416;border:1px solid #63532b;color:#f3d991}
-.message{background:#102a20;color:#a4f2c9;margin-top:12px}
-.error{background:#351c22;color:#ffb8c1}
-.status{color:#a8b3c9;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
-footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MACO Magic Number Game</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --card: #151d32;
+      --border: #2a3855;
+      --text: #f4f7ff;
+      --muted: #a9b5cc;
+      --accent: #65e6b4;
+      --danger: #ff7777;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px 14px 40px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 22px 8px;
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+      font-size: 29px;
+    }
+
+    header p {
+      color: var(--muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .pot-number {
+      font-size: 30px;
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat {
+      background: #0d1528;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 23px;
+      margin-top: 6px;
+      color: var(--accent);
+    }
+
+    .progress-track {
+      height: 9px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #2a3550;
+      margin-top: 16px;
+    }
+
+    .progress-fill {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width .3s ease;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin: 0 0 16px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    input, select {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: #0d1528;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid var(--accent);
+      border-color: transparent;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #07150f;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 9px;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .message.success {
+      display: block;
+      background: #12372e;
+      color: #a5f4d5;
+    }
+
+    .message.error {
+      display: block;
+      background: #3b2028;
+      color: #ffb6bc;
+    }
+
+    .message.info {
+      display: block;
+      background: #192b48;
+      color: #c7dcff;
+    }
+
+    .rules {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+      padding-left: 20px;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+
+    .refresh {
+      margin-top: 14px;
+      padding: 10px;
+      background: #25314b;
+      color: white;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 14px;
+    }
+  </style>
 </head>
+
 <body>
-<header>
-  <div class="logo">$MACO MAGIC</div>
-  <div class="badge">ROBINHOOD CHAIN</div>
-</header>
+  <main class="container">
+    <header>
+      <h1>MACO Magic Number</h1>
+      <p>Make a qualifying MACO purchase, choose your number, and enter the game.</p>
+    </header>
 
-<main>
-  <section class="hero">
-    <h1>Pick Your <span>Magic Number</span></h1>
-    <p>Choose a number from 1 to 10 and submit a qualifying new $MACO purchase.</p>
-  </section>
+    <section class="card">
+      <div class="label">CURRENT GAME</div>
+      <div class="pot-number" id="potNumber">Loading pot...</div>
 
-  <section class="prize">
-    <div class="muted">PRIZE PER COMPLETED POT</div>
-    <div class="amount">$5</div>
-    <p>11 verified entries per pot</p>
-  </section>
+      <div class="stats">
+        <div class="stat">
+          <div class="label">Verified entries</div>
+          <strong id="entryCount">— / 11</strong>
+        </div>
 
-  <section class="card">
-    <h2>How to Play</h2>
-    <ol class="rules">
-      <li>Make a new $MACO purchase worth at least $10.</li>
-      <li>Enter the wallet that made the purchase.</li>
-      <li>Submit its transaction hash and choose a number from 1 to 10.</li>
-      <li>Each qualifying transaction can only be used once.</li>
-      <li>After 11 verified entries, the pot closes.</li>
-      <li>An exact guess wins. If nobody guesses exactly, the closest guess wins.</li>
-      <li>If guesses are equally close, the earliest verified entry wins.</li>
-      <li>The winner receives $5 through manual payout.</li>
-    </ol>
-    <div class="notice">
-      Never share your seed phrase or private key. Only purchases verified by the game backend qualify.
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Enter the Game</h2>
-    <form id="entryForm">
-      <label for="wallet">Wallet address</label>
-      <input id="wallet" placeholder="0x..." autocomplete="off" required>
-
-      <label for="transaction">MACO purchase transaction hash</label>
-      <input id="transaction" placeholder="Paste transaction hash" autocomplete="off" required>
-
-      <label>Choose your number</label>
-      <div class="numbers">
-        <button type="button" class="number" data-number="1">1</button>
-        <button type="button" class="number" data-number="2">2</button>
-        <button type="button" class="number" data-number="3">3</button>
-        <button type="button" class="number" data-number="4">4</button>
-        <button type="button" class="number" data-number="5">5</button>
-        <button type="button" class="number" data-number="6">6</button>
-        <button type="button" class="number" data-number="7">7</button>
-        <button type="button" class="number" data-number="8">8</button>
-        <button type="button" class="number" data-number="9">9</button>
-        <button type="button" class="number" data-number="10">10</button>
+        <div class="stat">
+          <div class="label">Prize</div>
+          <strong id="prizeAmount">$5</strong>
+        </div>
       </div>
 
-      <label for="referral">Referral code (optional)</label>
-      <input id="referral" placeholder="Referral code, if any">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
 
-      <button class="primary" id="submitButton" type="submit">Submit Entry</button>
-      <div id="message" class="status" role="status" aria-live="polite"></div>
-    </form>
-  </section>
+      <p class="small" id="potStatus" aria-live="polite">
+        Loading the latest game information...
+      </p>
 
-  <section class="card">
-    <h2>Transparency</h2>
-    <p class="status">
-      Purchases are checked by the backend. Each pot requires 11 verified entries. Winners are recorded, and payouts are made manually.
-    </p>
-    <p class="status">Wait for confirmation before assuming your entry is registered.</p>
-  </section>
-</main>
+      <button type="button" class="refresh" id="refreshButton">
+        Refresh game information
+      </button>
+    </section>
 
-<footer>
-  MACO MAGIC NUMBER GAME<br>
-  Robinhood Chain · Chain ID 4663
-</footer>
+    <section class="card">
+      <h2>Enter the Game</h2>
 
-<script>
-"use strict";
+      <form id="entryForm">
+        <div class="field">
+          <label for="wallet">Your wallet address</label>
+          <input
+            id="wallet"
+            type="text"
+            placeholder="0x..."
+            autocomplete="off"
+            required
+          >
+        </div>
 
-const SUPABASE_URL = "https://gseachvpegtvnplsvfwo.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
-const ENTRY_FUNCTION = SUPABASE_URL + "/functions/v1/maco-magic-entry";
+        <div class="field">
+          <label for="number">Choose your number</label>
+          <select id="number" required>
+            <option value="">Select a number</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </div>
 
-const $ = id => document.getElementById(id);
-let selectedNumber = null;
+        <div class="field">
+          <label for="transactionHash">
+            MACO purchase transaction hash
+          </label>
+          <input
+            id="transactionHash"
+            type="text"
+            placeholder="Paste your transaction hash"
+            autocomplete="off"
+            required
+          >
+          <p class="small">
+            Use the hash of an eligible MACO buy transaction on Robinhood Chain.
+            Minimum qualifying purchase: $10.
+          </p>
+        </div>
 
-function showMessage(text, error = false) {
-  $("message").textContent = text;
-  $("message").className = error ? "message error" : "message";
-}
+        <div class="field">
+          <label for="referralCode">Referral code (optional)</label>
+          <input
+            id="referralCode"
+            type="text"
+            placeholder="Enter referral code, if any"
+            autocomplete="off"
+          >
+        </div>
 
-document.querySelectorAll(".number").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".number").forEach(b => b.classList.remove("selected"));
-    button.classList.add("selected");
-    selectedNumber = Number(button.dataset.number);
-  });
-});
+        <button id="submitButton" type="submit">
+          Verify Purchase & Enter
+        </button>
 
-$("entryForm").addEventListener("submit", async event => {
-  event.preventDefault();
+        <div
+          id="formMessage"
+          class="message"
+          role="status"
+          aria-live="polite"
+        ></div>
+      </form>
+    </section>
 
-  const wallet = $("wallet").value.trim();
-  const transactionHash = $("transaction").value.trim();
-  const referralCode = $("referral").value.trim();
-  const submitButton = $("submitButton");
+    <section class="card">
+      <h2>How It Works</h2>
+      <ol class="rules">
+        <li>Make an eligible MACO purchase worth at least $10.</li>
+        <li>Choose one number between 1 and 10.</li>
+        <li>Submit your wallet address and transaction hash.</li>
+        <li>Each qualifying purchase can count as one entry.</li>
+        <li>Each pot contains 11 entries.</li>
+        <li>The exact winning guess wins $5.</li>
+        <li>If nobody guesses exactly, the closest guess wins.</li>
+        <li>If equally close guesses tie, the earliest verified entry wins.</li>
+      </ol>
 
-  if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
-    showMessage("Enter a valid EVM wallet address.", true);
-    return;
-  }
+      <p class="small">
+        Winners are subject to verification. Prizes are paid manually.
+        This page does not transfer funds automatically.
+      </p>
+    </section>
 
-  if (!selectedNumber) {
-    showMessage("Choose a number from 1 to 10.", true);
-    return;
-  }
+    <footer>
+      MACO Magic Number Game
+    </footer>
+  </main>
 
-  if (!/^0x[a-fA-F0-9]{64}$/.test(transactionHash)) {
-    showMessage("Enter a valid transaction hash.", true);
-    return;
-  }
+  <script>
+    const SUPABASE_URL =
+      "https://gseachvpegtvnplsvfwo.supabase.co";
 
-  submitButton.disabled = true;
-  submitButton.textContent = "Verifying...";
-  showMessage("Checking your transaction. Please wait.");
+    const SUPABASE_KEY =
+      "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
 
-  try {
-    const response = await fetch(ENTRY_FUNCTION, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_ANON_KEY,
-        "Authorization": "Bearer " + SUPABASE_ANON_KEY
-      },
-      body: JSON.stringify({
-        wallet_address: wallet,
-        chosen_number: selectedNumber,
-        transaction_hash: transactionHash,
-        referral_code: referralCode || null
-      })
+    const ENTRY_FUNCTION =
+      SUPABASE_URL + "/functions/v1/maco-magic-entry";
+
+    const PUBLIC_POT_VIEW =
+      SUPABASE_URL + "/rest/v1/maco_magic_public";
+
+    const form = document.getElementById("entryForm");
+    const submitButton = document.getElementById("submitButton");
+    const refreshButton = document.getElementById("refreshButton");
+    const formMessage = document.getElementById("formMessage");
+
+    function showMessage(message, type) {
+      formMessage.textContent = message;
+      formMessage.className = "message " + type;
+    }
+
+    async function loadCurrentPot() {
+      const potNumber = document.getElementById("potNumber");
+      const entryCount = document.getElementById("entryCount");
+      const prizeAmount = document.getElementById("prizeAmount");
+      const potStatus = document.getElementById("potStatus");
+      const progressFill = document.getElementById("progressFill");
+
+      potStatus.textContent = "Loading the latest game information...";
+
+      try {
+        const query =
+          "?select=pot_number,status,entry_count,prize_usd,payout_status,opened_at" +
+          "&status=eq.open" +
+          "&order=pot_number.desc" +
+          "&limit=1";
+
+        const response = await fetch(PUBLIC_POT_VIEW + query, {
+          method: "GET",
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + SUPABASE_KEY
+          },
+          cache: "no-store"
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            "Could not load game information (HTTP " +
+            response.status + ")."
+          );
+        }
+
+        const pots = await response.json();
+
+        if (!Array.isArray(pots) || pots.length === 0) {
+          potNumber.textContent = "No open pot";
+          entryCount.textContent = "— / 11";
+          prizeAmount.textContent = "$5";
+          progressFill.style.width = "0%";
+          potStatus.textContent =
+            "No open pot is currently available. Please check again.";
+          return;
+        }
+
+        const pot = pots[0];
+        const count = Number(pot.entry_count) || 0;
+        const prize = Number(pot.prize_usd) || 5;
+
+        potNumber.textContent = "Pot #" + pot.pot_number;
+        entryCount.textContent = count + " / 11";
+        prizeAmount.textContent = "$" + prize.toFixed(2);
+        progressFill.style.width =
+          Math.min(100, (count / 11) * 100) + "%";
+
+        potStatus.textContent =
+          "Status: " + pot.status +
+          ". Game information is read from Supabase.";
+
+      } catch (error) {
+        potNumber.textContent = "Unavailable";
+        entryCount.textContent = "— / 11";
+        prizeAmount.textContent = "$5";
+        progressFill.style.width = "0%";
+        potStatus.textContent =
+          error.message +
+          " Please try refreshing. If the issue continues, the public view permissions may need checking.";
+      }
+    }
+
+    refreshButton.addEventListener("click", loadCurrentPot);
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const wallet =
+        document.getElementById("wallet").value.trim();
+
+      const chosenNumber =
+        Number(document.getElementById("number").value);
+
+      const transactionHash =
+        document.getElementById("transactionHash").value.trim();
+
+      const referralCode =
+        document.getElementById("referralCode").value.trim();
+
+      if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+        showMessage(
+          "Please enter a valid EVM wallet address.",
+          "error"
+        );
+        return;
+      }
+
+      if (!Number.isInteger(chosenNumber) ||
+          chosenNumber < 1 ||
+          chosenNumber > 10) {
+        showMessage(
+          "Choose a number between 1 and 10.",
+          "error"
+        );
+        return;
+      }
+
+      if (!/^0x[a-fA-F0-9]{64}$/.test(transactionHash)) {
+        showMessage(
+          "Please enter a valid transaction hash.",
+          "error"
+        );
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Verifying...";
+      showMessage(
+        "Checking your transaction. Please wait...",
+        "info"
+      );
+
+      try {
+        const response = await fetch(ENTRY_FUNCTION, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + SUPABASE_KEY
+          },
+          body: JSON.stringify({
+            wallet_address: wallet,
+            chosen_number: chosenNumber,
+            transaction_hash: transactionHash,
+            referral_code: referralCode || null
+          })
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok || result.success === false || result.error) {
+          throw new Error(
+            result.error ||
+            result.message ||
+            "The entry could not be verified. Please check the transaction details."
+          );
+        }
+
+        showMessage(
+          "Entry request processed. " +
+          (result.message || "Check the response below.") +
+          (result.pot_number != null
+            ? " Pot: #" + result.pot_number + "."
+            : "") +
+          (result.entries_in_pot != null
+            ? " Entries: " + result.entries_in_pot + "/11."
+            : "") +
+          (result.entry_id
+            ? " Entry ID: " + result.entry_id
+            : ""),
+          "success"
+        );
+
+        await loadCurrentPot();
+
+      } catch (error) {
+        showMessage(error.message, "error");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Verify Purchase & Enter";
+      }
     });
 
-    let result = {};
-    try {
-      result = await response.json();
-    } catch (_) {}
-
-    if (!response.ok || !result.success) {
-      throw new Error(
-        result.error || result.message ||
-        "Entry could not be verified. Please try again."
-      );
-    }
-
-    let message = "Entry confirmed.";
-
-    if (result.entry_id) message += " Entry ID: " + result.entry_id + ".";
-    if (result.pot_number !== undefined) message += " Pot #" + result.pot_number + ".";
-    if (result.entries_in_pot !== undefined) {
-      message += " Entries: " + result.entries_in_pot + "/11.";
-    }
-    if (result.pot_full) message += " Pot completed.";
-
-    showMessage(message);
-    $("transaction").value = "";
-
-  } catch (error) {
-    showMessage(error.message || "Connection failed. Please try again.", true);
-  } finally {
-    submitButton.disabled = false;
-    submitButton.textContent = "Submit Entry";
-  }
-});
-</script>
+    loadCurrentPot();
+    setInterval(loadCurrentPot, 30000);
+  </script>
 </body>
 </html>
