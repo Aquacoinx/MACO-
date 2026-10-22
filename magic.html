@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$MACO Magic Number Game</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d19;color:#fff;font-family:Arial,sans-serif}
+header{padding:18px;border-bottom:1px solid #26334b;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:21px;font-weight:bold;color:#55e6a5}
+.badge{font-size:11px;padding:7px 10px;border-radius:20px;background:#152a29;color:#55e6a5}
+main{max-width:600px;margin:auto;padding:20px 15px}
+.hero{text-align:center;padding:25px 10px}
+.hero h1{font-size:34px;margin:10px 0}
+.hero h1 span{color:#55e6a5}
+.hero p,.muted{color:#a8b3c9;line-height:1.7}
+.prize{background:linear-gradient(135deg,#143a35,#14243c);border:1px solid #326b5b;border-radius:18px;padding:24px;text-align:center;margin:15px 0}
+.amount{font-size:45px;font-weight:bold;color:#55e6a5;margin:8px}
+.card{background:#111a2b;border:1px solid #26334b;border-radius:15px;padding:20px;margin:17px 0}
+h2{font-size:20px;margin-top:0}
+.rules{padding-left:20px;color:#c1cadd;line-height:1.9;font-size:14px}
+label{display:block;margin:17px 0 7px;font-size:14px}
+input{width:100%;padding:13px;border:1px solid #34435e;border-radius:9px;background:#091120;color:white;font-size:15px}
+.numbers{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}
+.number{padding:14px 0;text-align:center;border:1px solid #34435e;background:#091120;border-radius:9px;cursor:pointer;color:white}
+.number.selected{background:#55e6a5;color:#07140f;border-color:#55e6a5;font-weight:bold}
+button{border:0;border-radius:9px;padding:14px;font-size:16px;font-weight:bold;cursor:pointer}
+.primary{width:100%;background:#55e6a5;color:#07140f;margin-top:20px}
+button:disabled{opacity:.5;cursor:not-allowed}
+.notice,.message{padding:13px;border-radius:9px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.notice{background:#282416;border:1px solid #63532b;color:#f3d991}
+.message{background:#102a20;color:#a4f2c9;margin-top:12px}
+.error{background:#351c22;color:#ffb8c1}
+.status{color:#a8b3c9;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo">$MACO MAGIC</div>
+  <div class="badge">ROBINHOOD CHAIN</div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Pick Your <span>Magic Number</span></h1>
+    <p>Choose a number from 1 to 10. Make a qualifying new $MACO purchase to enter.</p>
+  </section>
+
+  <section class="prize">
+    <div class="muted">PRIZE PER COMPLETED POT</div>
+    <div class="amount">$5</div>
+    <p>11 verified entries per pot</p>
+  </section>
+
+  <section class="card">
+    <h2>How to Play</h2>
+    <ol class="rules">
+      <li>Make a new $MACO purchase worth at least $10.</li>
+      <li>Enter the wallet that made the purchase.</li>
+      <li>Submit the transaction hash and choose a number from 1 to 10.</li>
+      <li>Each qualifying transaction can only be used once.</li>
+      <li>After 11 verified entries, the pot closes.</li>
+      <li>An exact guess wins. If nobody guesses exactly, the closest guess wins.</li>
+      <li>If guesses are equally close, the earliest verified entry wins.</li>
+      <li>The winner receives $5 through manual payout.</li>
+    </ol>
+    <div class="notice">
+      Never share your seed phrase or private key. Only qualifying purchases verified by the backend count.
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Enter the Game</h2>
+
+    <form id="entryForm">
+      <label for="wallet">Your wallet address</label>
+      <input id="wallet" type="text" placeholder="0x..." autocomplete="off" required>
+
+      <label for="transaction">Purchase transaction hash</label>
+      <input id="transaction" type="text" placeholder="Paste transaction hash" autocomplete="off" required>
+
+      <label>Choose your number</label>
+      <div class="numbers" id="numbers">
+        <button type="button" class="number" data-number="1">1</button>
+        <button type="button" class="number" data-number="2">2</button>
+        <button type="button" class="number" data-number="3">3</button>
+        <button type="button" class="number" data-number="4">4</button>
+        <button type="button" class="number" data-number="5">5</button>
+        <button type="button" class="number" data-number="6">6</button>
+        <button type="button" class="number" data-number="7">7</button>
+        <button type="button" class="number" data-number="8">8</button>
+        <button type="button" class="number" data-number="9">9</button>
+        <button type="button" class="number" data-number="10">10</button>
+      </div>
+
+      <label for="referral">Referral code (optional)</label>
+      <input id="referral" type="text" placeholder="Enter referral code if you have one">
+
+      <button class="primary" id="submitButton" type="submit">Submit Entry</button>
+      <div id="message" class="status" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Transparency</h2>
+    <p class="status">
+      Entries are checked against recorded MACO purchases. Each pot requires 11 verified entries. The winner and payout status are recorded in the game database.
+    </p>
+    <p class="status">
+      Wait for your entry confirmation. Submitting the form alone does not guarantee registration.
+    </p>
+  </section>
+</main>
+
+<footer>
+  MACO MAGIC NUMBER GAME<br>
+  Robinhood Chain · Chain ID 4663
+</footer>
+
+<script>
+"use strict";
+
+const SUPABASE_URL = "https://gseachvpegtvnplsvfwo.supabase.co";
+
+/*
+  IMPORTANT:
+  Insert the actual Supabase publishable/anon key here before launch.
+  Do not use a service-role or secret key in a public HTML file.
+*/
+const SUPABASE_ANON_KEY = "REPLACE_WITH_YOUR_ACTUAL_SUPABASE_PUBLISHABLE_KEY";
+
+const ENTRY_FUNCTION =
+  SUPABASE_URL + "/functions/v1/maco-magic-entry";
+
+const $ = id => document.getElementById(id);
+let selectedNumber = null;
+
+function showMessage(message, isError = false) {
+  const element = $("message");
+  element.textContent = message;
+  element.className = isError ? "message error" : "message";
+}
+
+document.querySelectorAll(".number").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".number").forEach(item => {
+      item.classList.remove("selected");
+    });
+
+    button.classList.add("selected");
+    selectedNumber = Number(button.dataset.number);
+  });
+});
+
+$("entryForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const wallet = $("wallet").value.trim();
+  const transactionHash = $("transaction").value.trim();
+  const referralCode = $("referral").value.trim();
+  const submitButton = $("submitButton");
+
+  if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+    showMessage("Please enter a valid wallet address.", true);
+    return;
+  }
+
+  if (!selectedNumber || selectedNumber < 1 || selectedNumber > 10) {
+    showMessage("Please choose a number from 1 to 10.", true);
+    return;
+  }
+
+  if (!/^0x[a-fA-F0-9]{64}$/.test(transactionHash)) {
+    showMessage("Please enter a valid transaction hash.", true);
+    return;
+  }
+
+  if (SUPABASE_ANON_KEY.startsWith("REPLACE_")) {
+    showMessage("Game setup is incomplete. The Supabase public key must be configured before entries can be submitted.", true);
+    return;
+  }
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Verifying...";
+  showMessage("Checking your transaction. Please wait.");
+
+  try {
+    const response = await fetch(ENTRY_FUNCTION, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": "Bearer " + SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({
+        wallet_address: wallet,
+        chosen_number: selectedNumber,
+        transaction_hash: transactionHash,
+        referral_code: referralCode || null
+      })
+    });
+
+    let result = {};
+    try {
+      result = await response.json();
+    } catch (_) {}
+
+    if (!response.ok || !result.success) {
+      throw new Error(
+        result.error || result.message ||
+        "Entry could not be verified. Please try again."
+      );
+    }
+
+    let confirmation = "Your entry is confirmed.";
+
+    if (result.pot_number !== undefined) {
+      confirmation += " Pot #" + result.pot_number + ".";
+    }
+
+    if (result.entries_in_pot !== undefined) {
+      confirmation += " Entries in pot: " + result.entries_in_pot + "/11.";
+    }
+
+    if (result.pot_full) {
+      confirmation += " This pot is full.";
+    }
+
+    showMessage(confirmation);
+    $("transaction").value = "";
+
+  } catch (error) {
+    showMessage(
+      error.message || "Connection failed. Please try again.",
+      true
+    );
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Submit Entry";
+  }
+});
+</script>
+</body>
+</html>
