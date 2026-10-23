@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MACO & Aquameme Ambassador Program</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#07111f;color:#f5f7fb;font-family:Arial,sans-serif}
+header{padding:22px 15px;text-align:center;background:#0c1d30;border-bottom:1px solid #29415b}
+header h1{margin:0 0 8px;font-size:23px}
+header p{margin:5px;color:#9fb5ca}
+main{max-width:850px;margin:auto;padding:16px}
+.card{background:#102238;border:1px solid #29415b;border-radius:12px;padding:17px;margin-bottom:16px}
+h2{font-size:20px;margin-top:0}
+h3{font-size:16px}
+input,select,textarea,button{width:100%;padding:12px;margin:7px 0;border-radius:7px;font-size:15px}
+input,select,textarea{background:#071626;color:white;border:1px solid #38516a}
+textarea{min-height:75px;resize:vertical}
+button{background:#25c7a0;color:#061a19;border:0;font-weight:bold;cursor:pointer}
+button.secondary{background:#29415b;color:white}
+button.danger{background:#8f3545;color:white}
+button:disabled{opacity:.5}
+.muted{color:#a6bacd;line-height:1.6}
+.hidden{display:none!important}
+.status{padding:12px;border-radius:8px;margin:12px 0;overflow-wrap:anywhere}
+.success{background:#123e35}
+.error{background:#4b2029}
+.tile{padding:13px;background:#091a2c;border-radius:8px;margin:10px 0;overflow-wrap:anywhere}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+hr{border:0;border-top:1px solid #29415b;margin:20px 0}
+small{color:#a6bacd}
+footer{text-align:center;padding:20px;color:#8ca2b7}
+@media(max-width:520px){.row{grid-template-columns:1fr}main{padding:10px}}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>MACO & Aquameme</h1>
+  <p>Ambassador Program</p>
+  <p>Grow the community. Complete tasks. Earn rewards.</p>
+</header>
+
+<main>
+<div id="message" aria-live="polite"></div>
+
+<section id="authSection" class="card">
+  <h2>Join the Ambassador Program</h2>
+  <p class="muted">Register and wait for administrator approval before accessing ambassador tasks.</p>
+
+  <form id="registerForm">
+    <h3>Create an account</h3>
+    <input id="regUsername" placeholder="Username" maxlength="40" required>
+    <input id="regEmail" type="email" placeholder="Email address" required>
+    <input id="regPassword" type="password" placeholder="Password (minimum 8 characters)" minlength="8" required>
+    <input id="regWallet" placeholder="Wallet address" required>
+    <select id="regFocus">
+      <option value="both">MACO & Aquameme</option>
+      <option value="maco">MACO</option>
+      <option value="aquameme">Aquameme</option>
+    </select>
+    <button type="submit">Register</button>
+  </form>
+
+  <hr>
+
+  <form id="loginForm">
+    <h3>Already registered?</h3>
+    <input id="loginEmail" type="email" placeholder="Email address" required>
+    <input id="loginPassword" type="password" placeholder="Password" required>
+    <button type="submit" class="secondary">Log in</button>
+  </form>
+</section>
+
+<section id="dashboard" class="hidden">
+  <div class="card">
+    <h2 id="welcome">Dashboard</h2>
+    <p id="accountStatus" class="muted"></p>
+    <button id="logoutButton" class="secondary">Log out</button>
+  </div>
+
+  <section id="pendingCard" class="card hidden">
+    <h2>Application Pending</h2>
+    <p class="muted">Your application is awaiting administrator approval. You cannot access ambassador tasks until approved.</p>
+  </section>
+
+  <section id="ambassadorCard" class="hidden">
+    <div class="card">
+      <h2>Your Ambassador Profile</h2>
+      <div class="tile">
+        <strong>Referral code</strong>
+        <p id="referralCode"></p>
+        <button id="copyReferral" class="secondary">Copy referral code</button>
+      </div>
+      <p class="muted">Share your code with new participants. Referral activity must be verified before it can count toward rewards.</p>
+    </div>
+
+    <div class="card">
+      <h2>Your Earnings</h2>
+      <div class="row">
+        <div class="tile">Verified creator-fee commission<strong id="commissionTotal">$0.00</strong></div>
+        <div class="tile">Approved task rewards<strong id="rewardTotal">$0.00</strong></div>
+      </div>
+      <div class="row">
+        <div class="tile">Available balance<strong id="availableBalance">$0.00</strong></div>
+        <div class="tile">Verified referrals<strong id="referralTotal">0</strong></div>
+      </div>
+      <p class="muted">Commission is 5% of eligible creator fees actually received and verified for your referrals. It is not 5% of trading volume.</p>
+    </div>
+
+    <div class="card">
+      <h2>Available Tasks</h2>
+      <div id="taskList" class="muted">Loading tasks…</div>
+    </div>
+
+    <div class="card">
+      <h2>Submit Task Proof</h2>
+      <form id="submissionForm">
+        <select id="submissionTask" required>
+          <option value="">Choose a task</option>
+        </select>
+        <textarea id="submissionProof" placeholder="Paste your evidence link or describe the work completed" required></textarea>
+        <button type="submit">Submit Proof</button>
+      </form>
+      <p class="muted">Each ambassador can submit one proof entry per task. An administrator will review it.</p>
+      <div id="mySubmissions"></div>
+    </div>
+
+    <div class="card">
+      <h2>Request a Withdrawal</h2>
+      <p class="muted">Minimum withdrawal: $50. Payments are processed manually after review.</p>
+      <form id="withdrawalForm">
+        <input id="withdrawAmount" type="number" min="50" step="0.01" placeholder="Amount in USD (minimum $50)" required>
+        <input id="withdrawWallet" placeholder="Receiving wallet address" required>
+        <button type="submit">Request Withdrawal</button>
+      </form>
+      <div id="myWithdrawals"></div>
+    </div>
+  </section>
+
+  <section id="adminCard" class="hidden">
+    <div class="card">
+      <h2>Administrator Dashboard</h2>
+      <p class="muted">Manage applications, tasks, submissions, verified fees, rewards, and manual payments.</p>
+    </div>
+
+    <div class="card">
+      <h2>Pending Applications</h2>
+      <div id="applicationsList">Loading applications…</div>
+    </div>
+
+    <div class="card">
+      <h2>Create a Task</h2>
+      <form id="taskForm">
+        <input id="taskTitle" placeholder="Task title" required>
+        <textarea id="taskDescription" placeholder="Task instructions and proof requirements" required></textarea>
+        <input id="taskCategory" placeholder="Category (e.g. X, Telegram, app, MACO)">
+        <input id="taskReward" type="number" min="0" step="0.01" placeholder="Reward in USD" required>
+        <label>Optional deadline</label>
+        <input id="taskDeadline" type="datetime-local">
+        <button type="submit">Create Task</button>
+      </form>
+      <div id="adminTasks"></div>
+    </div>
+
+    <div class="card">
+      <h2>Review Task Submissions</h2>
+      <div id="adminSubmissions">Loading submissions…</div>
+    </div>
+
+    <div class="card">
+      <h2>Record Verified Creator Fees</h2>
+      <p class="muted">Record only fees actually received and verified. The system calculates the ambassador's 5% commission from the amount entered.</p>
+      <form id="feeForm">
+        <select id="feeAmbassador" required>
+          <option value="">Choose ambassador</option>
+        </select>
+        <input id="feeAmount" type="number" min="0.01" step="0.01" placeholder="Verified creator fees received (USD)" required>
+        <input id="feeReference" placeholder="Evidence / transaction reference" required>
+        <button type="submit">Record Verified Fees</button>
+      </form>
+      <div id="adminFees"></div>
+    </div>
+
+    <div class="card">
+      <h2>Add a Task Reward or Bonus</h2>
+      <form id="rewardForm">
+        <select id="rewardAmbassador" required>
+          <option value="">Choose ambassador</option>
+        </select>
+        <input id="rewardAmount" type="number" min="0.01" step="0.01" placeholder="Reward amount in USD" required>
+        <input id="rewardDescription" placeholder="Reason for reward" required>
+        <button type="submit">Add Reward</button>
+      </form>
+      <div id="adminRewards"></div>
+    </div>
+
+    <div class="card">
+      <h2>Manage Withdrawal Requests</h2>
+      <p class="muted">Verify the balance and send payment manually before marking a request as paid.</p>
+      <div id="adminWithdrawals">Loading withdrawals…</div>
+    </div>
+
+    <div class="card">
+      <h2>Program Settings</h2>
+      <p>Creator-fee commission: <strong>5%</strong></p>
+      <p>Minimum withdrawal: <strong>$50</strong></p>
+      <p class="muted">This page displays the current intended settings. Change them only through a secured administrator process.</p>
+    </div>
+  </section>
+</section>
+</main>
+
+<footer>MACO & Aquameme Ambassador Program</footer>
+
+<script>
+"use strict";
+
+/* Public browser key only. Never put a service-role key here. */
+const SUPABASE_URL = "https://gseachvpegtvnplsvfwo.supabase.co";
+const SUPABASE_KEY = "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+let currentUser = null;
+let currentProfile = null;
+let adminUsers = [];
+
+function message(text, type = "success") {
+  $("message").replaceChildren();
+  const box = document.createElement("div");
+  box.className = "status " + type;
+  box.textContent = text;
+  $("message").appendChild(box);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function money(value) {
+  return "$" + Number(value || 0).toFixed(2);
+}
+
+function safeText(tag, text) {
+  const el = document.createElement(tag);
+  el.textContent = text == null ? "" : String(text);
+  return el;
+}
+
+function makeButton(label, handler, css = "secondary") {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = css;
+  b.textContent = label;
+  b.addEventListener("click", handler);
+  return b;
+}
+
+function isAdmin(user) {
+  return user?.app_metadata?.role === "admin";
+}
+
+function showDashboard() {
+  $("authSection").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+}
+
+function showLogin() {
+  $("dashboard").classList.add("hidden");
+  $("authSection").classList.remove("hidden");
+  $("pendingCard").classList.add("hidden");
+  $("ambassadorCard").classList.add("hidden");
+  $("adminCard").classList.add("hidden");
+}
+
+async function finishSavedRegistration(user) {
+  const raw = localStorage.getItem("maco_ambassador_registration");
+  if (!raw) return true;
+
+  let details;
+  try {
+    details = JSON.parse(raw);
+  } catch {
+    message("Saved registration details could not be read. Please register again or contact the administrator.", "error");
+    return false;
+  }
+
+  const {data: existing, error: lookupError} = await db
+    .from("ambassador_profiles")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (lookupError) {
+    message("Could not check your application: " + lookupError.message, "error");
+    return false;
+  }
+
+  if (!existing) {
+    const {error} = await db.rpc("register_ambassador", {
+      p_username: details.username,
+      p_wallet_address: details.wallet,
+      p_project_focus: details.focus
+    });
+
+    if (error) {
+      message("Application setup failed: " + error.message, "error");
+      return false;
+    }
+  }
+
+  localStorage.removeItem("maco_ambassador_registration");
+  message("Your ambassador application has been submitted and is awaiting approval.");
+  return true;
+}
+
+async function loadProfile(user) {
+  currentUser = user;
+  currentProfile = null;
+  showDashboard();
+
+  $("welcome").textContent = "Welcome";
+  $("accountStatus").textContent = "Loading your account…";
+  $("pendingCard").classList.add("hidden");
+  $("ambassadorCard").classList.add("hidden");
+  $("adminCard").classList.add("hidden");
+
+  const admin = isAdmin(user);
+  if (admin) {
+    $("adminCard").classList.remove("hidden");
+    $("welcome").textContent = "Administrator Dashboard";
+    $("accountStatus").textContent = "Administrator access";
+    await loadAdmin();
+  }
+
+  const {data: profile, error} = await db
+    .from("ambassador_profiles")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    $("accountStatus").textContent = "Could not load your profile.";
+    message("Profile error: " + error.message, "error");
+    return;
+  }
+
+  currentProfile = profile;
+
+  if (!profile) {
+    if (admin) return;
+    $("accountStatus").textContent = "No ambassador application is linked to this account.";
+    message("If you just confirmed your email, log in again to finish your application.", "error");
+    return;
+  }
+
+  $("welcome").textContent = "Welcome, " + profile.username;
+  $("accountStatus").textContent = "Application status: " + profile.status;
+
+  if (profile.status === "approved") {
+    $("ambassadorCard").classList.remove("hidden");
+    $("referralCode").textContent = profile.referral_code;
+    await loadAmbassador();
+  } else if (!admin) {
+    $("pendingCard").classList.remove("hidden");
+  }
+}
+
+async function loadTasks() {
+  const {data, error} = await db
+    .from("ambassador_tasks")
+    .select("*")
+    .eq("is_active", true)
+    .order("created_at", {ascending:false});
+
+  $("taskList").replaceChildren();
+  $("submissionTask").replaceChildren(new Option("Choose a task", ""));
+
+  if (error) {
+    $("taskList").textContent = "Unable to load tasks: " + error.message;
+    return;
+  }
+
+  if (!data?.length) {
+    $("taskList").textContent = "No active tasks yet.";
+    return;
+  }
+
+  for (const task of data) {
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.append(safeText("strong", task.title));
+    box.append(safeText("p", task.description));
+    box.append(safeText("p", "Category: " + task.category + " | Reward: " + money(task.reward_usd)));
+    if (task.deadline) box.append(safeText("small", "Deadline: " + new Date(task.deadline).toLocaleString()));
+    $("taskList").appendChild(box);
+    $("submissionTask").add(new Option(task.title + " — " + money(task.reward_usd), task.id));
+  }
+}
+
+async function loadAmbassador() {
+  if (!currentProfile) return;
+
+  const id = currentProfile.id;
+
+  const [fees, rewards, withdrawals, referrals, submissions] = await Promise.all([
+    db.from("ambassador_creator_fees").select("commission_usd").eq("ambassador_id", id),
+    db.from("ambassador_reward_ledger").select("amount_usd").eq("ambassador_id", id),
+    db.from("ambassador_withdrawals").select("amount_usd,status").eq("ambassador_id", id),
+    db.from("ambassador_referrals").select("id").eq("ambassador_id", id).eq("is_verified", true),
+    db.from("ambassador_task_submissions").select("*, ambassador_tasks(title)").eq("ambassador_id", id).order("submitted_at", {ascending:false})
+  ]);
+
+  if (fees.error || rewards.error || withdrawals.error || referrals.error || submissions.error) {
+    message("Some dashboard information could not be loaded. Refresh and try again.", "error");
+  }
+
+  const commission = (fees.data || []).reduce((s,r)=>s+Number(r.commission_usd||0),0);
+  const reward = (rewards.data || []).reduce((s,r)=>s+Number(r.amount_usd||0),0);
+  const withdrawn = (withdrawals.data || [])
+    .filter(r => ["pending","approved","paid"].includes(r.status))
+    .reduce((s,r)=>s+Number(r.amount_usd||0),0);
+  const balance = Math.max(0, commission + reward - withdrawn);
+
+  $("commissionTotal").textContent = money(commission);
+  $("rewardTotal").textContent = money(reward);
+  $("availableBalance").textContent = money(balance);
+  $("referralTotal").textContent = String((referrals.data || []).length);
+
+  await loadTasks();
+  renderMySubmissions(submissions.data || []);
+  renderMyWithdrawals(withdrawals.data || []);
+}
+
+function renderMySubmissions(rows) {
+  const target = $("mySubmissions");
+  target.replaceChildren(safeText("h3", "Your submissions"));
+
+  if (!rows.length) {
+    target.append(safeText("p", "No submissions yet."));
+    return;
+  }
+
+  rows.forEach(row => {
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.append(safeText("strong", row.ambassador_tasks?.title || ("Task #" + row.task_id)));
+    box.append(safeText("p", "Status: " + row.status));
+    if (row.admin_note) box.append(safeText("p", "Administrator note: " + row.admin_note));
+    target.appendChild(box);
+  });
+}
+
+function renderMyWithdrawals(rows) {
+  const target = $("myWithdrawals");
+  target.replaceChildren(safeText("h3", "Your withdrawal requests"));
+
+  if (!rows.length) {
+    target.append(safeText("p", "No withdrawal requests."));
+    return;
+  }
+
+  rows.forEach(row => {
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.append(safeText("p", money(row.amount_usd) + " — " + row.status));
+    if (row.payment_reference) box.append(safeText("p", "Reference: " + row.payment_reference));
+    target.appendChild(box);
+  });
+}
+
+async function loadAdmin() {
+  const {data: profiles, error: profileError} = await db
+    .from("ambassador_profiles")
+    .select("*")
+    .order("created_at", {ascending:false});
+
+  if (profileError) {
+    $("applicationsList").textContent = "Could not load applications: " + profileError.message;
+    return;
+  }
+
+  adminUsers = profiles || [];
+  renderApplications(adminUsers);
+  fillAmbassadorSelectors(adminUsers);
+  await Promise.all([
+    loadAdminTasks(),
+    loadAdminSubmissions(),
+    loadAdminFees(),
+    loadAdminRewards(),
+    loadAdminWithdrawals()
+  ]);
+}
+
+function fillAmbassadorSelectors(profiles) {
+  for (const id of ["feeAmbassador","rewardAmbassador"]) {
+    const select = $(id);
+    select.replaceChildren(new Option("Choose ambassador", ""));
+    profiles.filter(p=>p.status==="approved").forEach(p => {
+      select.add(new Option(p.username + " — " + p.email, p.id));
+    });
+  }
+}
+
+function renderApplications(profiles) {
+  const target = $("applicationsList");
+  target.replaceChildren();
+
+  const pending = profiles.filter(p=>p.status==="pending");
+  if (!pending.length) {
+    target.append(safeText("p", "No pending applications."));
+  }
+
+  pending.forEach(profile => {
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.append(safeText("strong", profile.username));
+    box.append(safeText("p", profile.email));
+    box.append(safeText("p", "Wallet: " + profile.wallet_address));
+    box.append(safeText("p", "Focus: " + profile.project_focus));
+    box.append(makeButton("Approve application", async()=>{
+      await changeProfileStatus(profile.id,"approved");
+    }));
+    box.append(makeButton("Reject application", async()=>{
+      await changeProfileStatus(profile.id,"rejected");
+    },"danger"));
+    target.appendChild(box);
+  });
+
+  const approved = profiles.filter(p=>p.status==="approved");
+  if (approved.length) {
+    const heading = safeText("h3", "Approved ambassadors");
+    target.appendChild(heading);
+    approved.forEach(p=>{
+      const box=document.createElement("div");
+      box.className="tile";
+      box.append(safeText("p",p.username+" — "+p.email));
+      box.append(safeText("small","Referral code: "+p.referral_code));
+      box.append(makeButton("Suspend",async()=>changeProfileStatus(p.id,"suspended"),"danger"));
+      target.appendChild(box);
+    });
+  }
+}
+
+async function changeProfileStatus(id,status) {
+  const {error} = await db.from("ambassador_profiles").update({status}).eq("id",id);
+  if (error) return message("Could not update application: "+error.message,"error");
+  message("Application status updated to "+status+".");
+  await loadAdmin();
+}
+
+async function loadAdminTasks() {
+  const target = $("adminTasks");
+  target.replaceChildren();
+  const {data,error} = await db.from("ambassador_tasks").select("*").order("created_at",{ascending:false});
+  if(error){target.textContent="Could not load tasks: "+error.message;return;}
+  (data||[]).forEach(task=>{
+    const box=document.createElement("div");box.className="tile";
+    box.append(safeText("strong",task.title));
+    box.append(safeText("p","Reward: "+money(task.reward_usd)+" | "+(task.is_active?"Active":"Inactive")));
+    box.append(makeButton(task.is_active?"Deactivate task":"Activate task",async()=>{
+      const {error:e}=await db.from("ambassador_tasks").update({is_active:!task.is_active}).eq("id",task.id);
+      if(e)return message(e.message,"error");
+      await loadAdminTasks();
+    }));
+    target.appendChild(box);
+  });
+}
+
+async function loadAdminSubmissions() {
+  const target=$("adminSubmissions");target.replaceChildren();
+  const {data:rows,error}=await db.from("ambassador_task_submissions").select("*").order("submitted_at",{ascending:false});
+  if(error){target.textContent="Could not load submissions: "+error.message;return;}
+  if(!rows?.length){target.textContent="No submissions yet.";return;}
+
+  const [profilesResult,tasksResult]=await Promise.all([
+    db.from("ambassador_profiles").select("id,username,email"),
+    db.from("ambassador_tasks").select("id,title,reward_usd")
+  ]);
+  const profiles=profilesResult.data||[];
+  const tasks=tasksResult.data||[];
+
+  rows.forEach(row=>{
+    const p=profiles.find(x=>x.id===row.ambassador_id);
+    const t=tasks.find(x=>x.id===row.task_id);
+    const box=document.createElement("div");box.className="tile";
+    box.append(safeText("strong",(p?.username||row.ambassador_id)+" — "+(t?.title||"Task #"+row.task_id)));
+    box.append(safeText("p","Proof: "+row.proof));
+    box.append(safeText("p","Status: "+row.status));
+    if(row.status==="pending"){
+      const note=document.createElement("input");
+      note.placeholder="Optional note for ambassador";
+      box.append(note);
+      box.append(makeButton("Approve proof",async()=>{
+        const {error:e}=await db.from("ambassador_task_submissions").update({status:"approved",admin_note:note.value,reviewed_at:new Date().toISOString()}).eq("id",row.id);
+        if(e)return message(e.message,"error");
+        if(t && Number(t.reward_usd)>0){
+          const {error:re}=await db.from("ambassador_reward_ledger").insert({
+            ambassador_id:row.ambassador_id,
+            amount_usd:t.reward_usd,
+            reward_type:"task",
+            description:"Approved task: "+t.title
+          });
+          if(re)return message("Proof approved, but reward entry failed. Check the reward ledger before retrying: "+re.message,"error");
+        }
+        message("Proof approved.");
+        await loadAdminSubmissions();
+      }));
+      box.append(makeButton("Reject proof",async()=>{
+        const {error:e}=await db.from("ambassador_task_submissions").update({status:"rejected",admin_note:note.value,reviewed_at:new Date().toISOString()}).eq("id",row.id);
+        if(e)return message(e.message,"error");
+        message("Proof rejected.");
+        await loadAdminSubmissions();
+      },"danger"));
+    }
+    target.appendChild(box);
+  });
+}
+
+async function loadAdminFees() {
+  const target=$("adminFees");target.replaceChildren();
+  const {data:rows,error}=await db.from("ambassador_creator_fees").select("*").order("created_at",{ascending:false});
+  if(error){target.textContent="Could not load creator fees: "+error.message;return;}
+  if(!rows?.length){target.textContent="No verified fee records yet.";return;}
+  rows.forEach(r=>{
+    const p=adminUsers.find(x=>x.id===r.ambassador_id);
+    const box=document.createElement("div");box.className="tile";
+    box.append(safeText("p",(p?.username||r.ambassador_id)+" — Fees: "+money(r.amount_usd)+" — Commission: "+money(r.commission_usd)));
+    box.append(safeText("small",r.reference_note||"No reference"));
+    target.appendChild(box);
+  });
+}
+
+async function loadAdminRewards() {
+  const target=$("adminRewards");target.replaceChildren();
+  const {data:rows,error}=await db.from("ambassador_reward_ledger").select("*").order("created_at",{ascending:false});
+  if(error){target.textContent="Could not load rewards: "+error.message;return;}
+  if(!rows?.length){target.textContent="No rewards recorded yet.";return;}
+  rows.forEach(r=>{
+    const p=adminUsers.find(x=>x.id===r.ambassador_id);
+    const box=document.createElement("div");box.className="tile";
+    box.append(safeText("p",(p?.username||r.ambassador_id)+" — "+money(r.amount_usd)+" — "+r.reward_type));
+    box.append(safeText("small",r.description||""));
+    target.appendChild(box);
+  });
+}
+
+async function loadAdminWithdrawals() {
+  const target=$("adminWithdrawals");target.replaceChildren();
+  const {data:rows,error}=await db.from("ambassador_withdrawals").select("*").order("created_at",{ascending:false});
+  if(error){target.textContent="Could not load withdrawals: "+error.message;return;}
+  if(!rows?.length){target.textContent="No withdrawal requests yet.";return;}
+
+  rows.forEach(r=>{
+    const p=adminUsers.find(x=>x.id===r.ambassador_id);
+    const box=document.createElement("div");box.className="tile";
+    box.append(safeText("strong",(p?.username||r.ambassador_id)+" — "+money(r.amount_usd)));
+    box.append(safeText("p","Wallet: "+r.wallet_address));
+    box.append(safeText("p","Status: "+r.status));
+    if(r.status==="pending"||r.status==="approved"){
+      const ref=document.createElement("input");ref.placeholder="Payment reference / transaction hash";
+      box.append(ref);
+      box.append(makeButton("Mark approved",async()=>{
+        const {error:e}=await db.from("ambassador_withdrawals").update({status:"approved"}).eq("id",r.id);
+        if(e)return message(e.message,"error");
+        await loadAdminWithdrawals();
+      }));
+      box.append(makeButton("Mark paid",async()=>{
+        if(!ref.value.trim())return message("Enter the payment reference before marking as paid.","error");
+        if(!confirm("Confirm that you have sent this payment manually?"))return;
+        const {error:e}=await db.from("ambassador_withdrawals").update({status:"paid",payment_reference:ref.value.trim(),paid_at:new Date().toISOString()}).eq("id",r.id);
+        if(e)return message(e.message,"error");
+        message("Withdrawal marked as paid.");
+        await loadAdminWithdrawals();
+      }));
+      box.append(makeButton("Reject request",async()=>{
+        const {error:e}=await db.from("ambassador_withdrawals").update({status:"rejected"}).eq("id",r.id);
+        if(e)return message(e.message,"error");
+        await loadAdminWithdrawals();
+      },"danger"));
+    }
+    target.appendChild(box);
+  });
+}
+
+$("registerForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+
+  const details={
+    username:$("regUsername").value.trim(),
+    wallet:$("regWallet").value.trim(),
+    focus:$("regFocus").value
+  };
+  const email=$("regEmail").value.trim();
+  const password=$("regPassword").value;
+
+  if(details.username.length<2 || details.wallet.length<5){
+    return message("Enter a valid username and wallet address.","error");
+  }
+  if(password.length<8)return message("Password must be at least 8 characters.","error");
+
+  const {data,error}=await db.auth.signUp({email,password});
+  if(error)return message(error.message,"error");
+
+  localStorage.setItem("maco_ambassador_registration",JSON.stringify(details));
+
+  if(data.session && data.user){
+    const ok=await finishSavedRegistration(data.user);
+    if(ok)await loadProfile(data.user);
+  }else{
+    message("Account created. Check your email, confirm it, then log in on this device to complete your ambassador application.");
+  }
+});
+
+$("loginForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const {data,error}=await db.auth.signInWithPassword({
+    email:$("loginEmail").value.trim(),
+    password:$("loginPassword").value
+  });
+  if(error)return message(error.message,"error");
+  if(data.user){
+    const ok=await finishSavedRegistration(data.user);
+    if(ok)await loadProfile(data.user);
+  }
+});
+
+$("logoutButton").addEventListener("click",async()=>{
+  const {error}=await db.auth.signOut();
+  if(error)return message(error.message,"error");
+  currentUser=null;currentProfile=null;showLogin();
+});
+
+$("copyReferral").addEventListener("click",async()=>{
+  try{
+    await navigator.clipboard.writeText($("referralCode").textContent);
+    message("Referral code copied.");
+  }catch{
+    message("Your referral code is: "+$("referralCode").textContent);
+  }
+});
+
+$("submissionForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!currentProfile)return message("Ambassador profile not found.","error");
+
+  const taskId=Number($("submissionTask").value);
+  const proof=$("submissionProof").value.trim();
+  if(!taskId||!proof)return message("Choose a task and provide proof.","error");
+
+  const {error}=await db.from("ambassador_task_submissions").insert({
+    ambassador_id:currentProfile.id,
+    task_id:taskId,
+    proof
+  });
+
+  if(error)return message("Submission failed: "+error.message,"error");
+  $("submissionProof").value="";
+  message("Proof submitted for administrator review.");
+  await loadAmbassador();
+});
+
+$("withdrawalForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!currentProfile)return message("Ambassador profile not found.","error");
+
+  const amount=Number($("withdrawAmount").value);
+  const wallet=$("withdrawWallet").value.trim();
+
+  if(amount<50)return message("Minimum withdrawal is $50.","error");
+  if(!wallet)return message("Enter the receiving wallet address.","error");
+
+  const [fees,rewards,withdrawals]=await Promise.all([
+    db.from("ambassador_creator_fees").select("commission_usd").eq("ambassador_id",currentProfile.id),
+    db.from("ambassador_reward_ledger").select("amount_usd").eq("ambassador_id",currentProfile.id),
+    db.from("ambassador_withdrawals").select("amount_usd,status").eq("ambassador_id",currentProfile.id)
+  ]);
+
+  if(fees.error||rewards.error||withdrawals.error)return message("Could not verify your available balance. Try again.","error");
+
+  const commission=(fees.data||[]).reduce((s,r)=>s+Number(r.commission_usd||0),0);
+  const reward=(rewards.data||[]).reduce((s,r)=>s+Number(r.amount_usd||0),0);
+  const reserved=(withdrawals.data||[])
+    .filter(r=>["pending","approved","paid"].includes(r.status))
+    .reduce((s,r)=>s+Number(r.amount_usd||0),0);
+  const balance=Math.max(0,commission+reward-reserved);
+
+  if(amount>balance)return message("Your available balance is "+money(balance)+".","error");
+
+  const {error}=await db.from("ambassador_withdrawals").insert({
+    ambassador_id:currentProfile.id,
+    amount_usd:amount,
+    wallet_address:wallet
+  });
+
+  if(error)return message("Withdrawal request failed: "+error.message,"error");
+  $("withdrawAmount").value="";
+  message("Withdrawal request submitted. Payment is manual and subject to review.");
+  await loadAmbassador();
+});
+
+$("taskForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const title=$("taskTitle").value.trim();
+  const description=$("taskDescription").value.trim();
+  const category=$("taskCategory").value.trim()||"general";
+  const reward=Number($("taskReward").value);
+  const deadline=$("taskDeadline").value;
+
+  if(!title||!description||reward<0)return message("Check the task details and reward.","error");
+
+  const {error}=await db.from("ambassador_tasks").insert({
+    title,description,category,reward_usd:reward,
+    deadline:deadline?new Date(deadline).toISOString():null,
+    is_active:true
+  });
+
+  if(error)return message("Task creation failed: "+error.message,"error");
+  $("taskForm").reset();
+  message("Task created.");
+  await loadAdminTasks();
+});
+
+$("feeForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const ambassadorId=$("feeAmbassador").value;
+  const amount=Number($("feeAmount").value);
+  const reference=$("feeReference").value.trim();
+
+  if(!ambassadorId||amount<=0||!reference)return message("Complete all creator-fee fields.","error");
+
+  const commission=Math.round(amount*0.05*100)/100;
+
+  const {error}=await db.from("ambassador_creator_fees").insert({
+    ambassador_id:ambassadorId,
+    amount_usd:amount,
+    commission_usd:commission,
+    reference_note:reference,
+    verified_by:currentUser.id
+  });
+
+  if(error)return message("Could not record creator fees: "+error.message,"error");
+  $("feeForm").reset();
+  message("Verified fees recorded. Commission added: "+money(commission));
+  await loadAdminFees();
+});
+
+$("rewardForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  const ambassadorId=$("rewardAmbassador").value;
+  const amount=Number($("rewardAmount").value);
+  const description=$("rewardDescription").value.trim();
+
+  if(!ambassadorId||amount<=0||!description)return message("Complete all reward fields.","error");
+
+  const {error}=await db.from("ambassador_reward_ledger").insert({
+    ambassador_id:ambassadorId,
+    amount_usd:amount,
+    reward_type:"bonus",
+    description
+  });
+
+  if(error)return message("Could not add reward: "+error.message,"error");
+  $("rewardForm").reset();
+  message("Reward added.");
+  await loadAdminRewards();
+});
+
+db.auth.onAuthStateChange((event,session)=>{
+  if(session?.user){
+    setTimeout(()=>loadProfile(session.user),0);
+  }else{
+    currentUser=null;
+    currentProfile=null;
+    showLogin();
+  }
+});
+
+(async function start(){
+  const {data,error}=await db.auth.getSession();
+  if(error){
+    message("Could not check login session: "+error.message,"error");
+    return;
+  }
+  if(data.session?.user){
+    await loadProfile(data.session.user);
+  }
+})();
+</script>
+</body>
+</html> 
