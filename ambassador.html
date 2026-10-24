@@ -11,7 +11,7 @@ body{margin:0;background:#07111f;color:#f5f7fb;font-family:Arial,sans-serif}
 header{padding:22px 15px;text-align:center;background:#0c1d30;border-bottom:1px solid #29415b}
 header h1{margin:0 0 8px;font-size:23px}
 header p{margin:5px;color:#9fb5ca}
-main{max-width:900px;margin:auto;padding:16px}
+main{max-width:1000px;margin:auto;padding:16px}
 .card{background:#102238;border:1px solid #29415b;border-radius:12px;padding:17px;margin-bottom:16px}
 h2{font-size:20px;margin-top:0}
 h3{font-size:16px}
@@ -29,6 +29,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .error{background:#4b2029}
 .tile{padding:13px;background:#091a2c;border-radius:8px;margin:10px 0;overflow-wrap:anywhere}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
 hr{border:0;border-top:1px solid #29415b;margin:20px 0}
 small{color:#a6bacd}
 table{width:100%;border-collapse:collapse;margin-top:10px}
@@ -37,18 +38,15 @@ th,td{text-align:left;padding:10px;border-bottom:1px solid #29415b;overflow-wrap
 .metric{font-size:22px;font-weight:bold;display:block;margin-top:8px}
 .badge{display:inline-block;padding:5px 8px;border-radius:5px;background:#29415b;margin-top:5px}
 footer{text-align:center;padding:20px;color:#8ca2b7}
-@media(max-width:520px){
- .row{grid-template-columns:1fr}
- main{padding:10px}
- th,td{padding:7px;font-size:13px}
-}
+@media(max-width:520px){.row{grid-template-columns:1fr}main{padding:10px}th,td{padding:7px;font-size:13px}}
 </style>
 </head>
 <body>
+
 <header>
   <h1>MACO & Aquameme</h1>
   <p>Ambassador Program</p>
-  <p>Complete tasks. Earn points. Generate volume. Earn rewards.</p>
+  <p>Complete tasks. Generate volume. Earn rewards.</p>
 </header>
 
 <main>
@@ -97,40 +95,59 @@ footer{text-align:center;padding:20px;color:#8ca2b7}
   <section id="ambassadorCard" class="hidden">
     <div class="card">
       <h2>Your Ambassador Statistics</h2>
-      <div class="row">
-        <div class="tile">Total points
-          <span id="myPoints" class="metric">0</span>
-        </div>
-        <div class="tile">Approved tasks
-          <span id="myCompleted" class="metric">0</span>
-        </div>
+
+      <div class="metrics">
+        <div class="tile">Total points<span id="myPoints" class="metric">0</span></div>
+        <div class="tile">Approved tasks<span id="myCompleted" class="metric">0</span></div>
+        <div class="tile">Historical creator-fee commission<span id="commissionTotal" class="metric">$0.00</span></div>
+        <div class="tile">Task and bonus earnings<span id="volumeTotal" class="metric">$0.00</span></div>
+        <div class="tile">Magic Number approved volume<span id="magicVolume" class="metric">$0.00</span></div>
+        <div class="tile">Magic Number commission — 2.5%<span id="magicCommission" class="metric">$0.00</span></div>
+        <div class="tile">Volume Arena approved volume<span id="arenaVolume" class="metric">$0.00</span></div>
+        <div class="tile">Volume Arena commission — 1.5%<span id="arenaCommission" class="metric">$0.00</span></div>
+        <div class="tile">Available balance<span id="availableBalance" class="metric">$0.00</span></div>
+        <div class="tile">Minimum withdrawal<span class="metric">$50.00</span></div>
       </div>
-      <div class="row">
-        <div class="tile">Creator-fee commission
-          <span id="commissionTotal" class="metric">$0.00</span>
-        </div>
-        <div class="tile">Volume-task earnings
-          <span id="volumeTotal" class="metric">$0.00</span>
-        </div>
-      </div>
-      <div class="row">
-        <div class="tile">Available balance
-          <span id="availableBalance" class="metric">$0.00</span>
-        </div>
-        <div class="tile">Withdrawal minimum
-          <span class="metric">$50.00</span>
-        </div>
-      </div>
+    </div>
+
+    <div class="card">
+      <h2>Submit a Volume Claim</h2>
       <p class="muted">
-        Ordinary tasks award points, not cash. Volume-task rewards are paid in dollars.
-        Creator-fee commission is 5% of eligible creator fees actually received and verified,
-        not 5% of trading volume.
+        Submit your volume and evidence for administrator review.
+        Commission is based on approved volume, not claimed volume.
       </p>
+
+      <form id="claimForm">
+        <label for="claimType">Claim type</label>
+        <select id="claimType" required>
+          <option value="magic_number">Magic Number Game — 2.5%</option>
+          <option value="trading_volume">Volume Arena — 1.5%</option>
+        </select>
+
+        <div id="referralCodeArea" class="hidden">
+          <label for="claimReferralCode">Existing Volume Arena referral code</label>
+          <input id="claimReferralCode" maxlength="150">
+        </div>
+
+        <label for="claimAmount">Claimed volume in USD</label>
+        <input id="claimAmount" type="number" min="0.01" step="0.01" required>
+
+        <label for="claimEvidence">Evidence link or explanation</label>
+        <textarea id="claimEvidence" maxlength="5000" required
+          placeholder="Provide evidence the administrator can review."></textarea>
+
+        <button id="claimSubmit" type="submit">Submit Claim</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>My Volume Claims</h2>
+      <div id="myClaims" class="table-wrap">Loading claims…</div>
     </div>
 
     <div class="card">
       <h2>Ambassador Leaderboard</h2>
-      <p class="muted">Rankings are based on approved points. Earnings are displayed separately.</p>
+      <p class="muted">Rankings are based on approved points.</p>
       <button id="refreshLeaderboard" class="secondary">Refresh leaderboard</button>
       <div id="leaderboard" class="table-wrap">Loading leaderboard…</div>
     </div>
@@ -146,21 +163,19 @@ footer{text-align:center;padding:20px;color:#8ca2b7}
         <select id="submissionTask" required>
           <option value="">Choose a task</option>
         </select>
-        <textarea id="submissionProof" placeholder="Paste your evidence link or describe the work completed" required></textarea>
+        <textarea id="submissionProof" placeholder="Paste your evidence link or describe your work" required></textarea>
         <button type="submit">Submit Proof</button>
       </form>
-      <p class="muted">An administrator must review your proof before points or rewards are credited.</p>
       <div id="mySubmissions"></div>
     </div>
 
     <div class="card">
       <h2>Request a Withdrawal</h2>
       <p class="muted">
-        Minimum withdrawal: $50. At least 75% of the applicable tasks must be approved.
-        Volume tasks count toward this completion requirement. Payments are manual and subject to review.
+        Minimum withdrawal: $50. The existing database rules and the 75% task-completion requirement still apply.
       </p>
       <form id="withdrawalForm">
-        <input id="withdrawAmount" type="number" min="50" step="0.01" placeholder="Amount in USD (minimum $50)" required>
+        <input id="withdrawAmount" type="number" min="50" step="0.01" placeholder="Amount in USD" required>
         <input id="withdrawWallet" placeholder="Receiving wallet address" required>
         <button type="submit">Request Withdrawal</button>
       </form>
@@ -171,37 +186,32 @@ footer{text-align:center;padding:20px;color:#8ca2b7}
   <section id="adminCard" class="hidden">
     <div class="card">
       <h2>Administrator Dashboard</h2>
-      <p class="muted">Manage ambassadors, tasks, submissions, verified fees, rewards, and payments.</p>
     </div>
 
     <div class="card">
       <h2>Pending Applications</h2>
-      <div id="applicationsList">Loading applications…</div>
+      <div id="applicationsList">Loading…</div>
     </div>
 
     <div class="card">
       <h2>Create a Task</h2>
       <form id="taskForm">
         <input id="taskTitle" placeholder="Task title" required>
-        <textarea id="taskDescription" placeholder="Task instructions and proof requirements" required></textarea>
-        <input id="taskCategory" placeholder="Category (e.g. X, Telegram, app, MACO)">
-
+        <textarea id="taskDescription" placeholder="Task instructions" required></textarea>
+        <input id="taskCategory" placeholder="Task category">
         <label for="taskType">Reward type</label>
-        <select id="taskType" required>
-          <option value="points">Points task — no cash reward</option>
-          <option value="volume">Volume task — dollar reward</option>
+        <select id="taskType">
+          <option value="points">Points task</option>
+          <option value="volume">Dollar reward task</option>
         </select>
-
         <div id="pointsRewardField">
-          <label for="taskPoints">Points awarded on approval</label>
+          <label for="taskPoints">Points awarded</label>
           <input id="taskPoints" type="number" min="1" step="1" value="10">
         </div>
-
         <div id="dollarRewardField" class="hidden">
-          <label for="taskReward">Dollar reward on approval</label>
+          <label for="taskReward">Dollar reward</label>
           <input id="taskReward" type="number" min="0.01" step="0.01" value="5">
         </div>
-
         <label for="taskDeadline">Optional deadline</label>
         <input id="taskDeadline" type="datetime-local">
         <button type="submit">Create Task</button>
@@ -211,23 +221,16 @@ footer{text-align:center;padding:20px;color:#8ca2b7}
 
     <div class="card">
       <h2>Review Task Submissions</h2>
-      <div id="adminSubmissions">Loading submissions…</div>
+      <div id="adminSubmissions">Loading…</div>
     </div>
 
     <div class="card">
-      <h2>Record Verified Creator Fees</h2>
+      <h2>Review Volume Claims</h2>
       <p class="muted">
-        Record only fees actually received and verified. The system calculates 5% commission.
+        Verify the evidence before approving. Enter the approved volume.
+        The database trigger calculates the commission.
       </p>
-      <form id="feeForm">
-        <select id="feeAmbassador" required>
-          <option value="">Choose ambassador</option>
-        </select>
-        <input id="feeAmount" type="number" min="0.01" step="0.01" placeholder="Verified creator fees received (USD)" required>
-        <input id="feeReference" placeholder="Evidence / transaction reference" required>
-        <button type="submit">Record Verified Fees</button>
-      </form>
-      <div id="adminFees"></div>
+      <div id="adminClaims">Loading claims…</div>
     </div>
 
     <div class="card">
@@ -236,17 +239,21 @@ footer{text-align:center;padding:20px;color:#8ca2b7}
         <select id="rewardAmbassador" required>
           <option value="">Choose ambassador</option>
         </select>
-        <input id="rewardAmount" type="number" min="0.01" step="0.01" placeholder="Bonus amount in USD" required>
+        <input id="rewardAmount" type="number" min="0.01" step="0.01" placeholder="Bonus in USD" required>
         <input id="rewardDescription" placeholder="Reason for bonus" required>
         <button type="submit">Add Bonus</button>
       </form>
-      <div id="adminRewards"></div>
     </div>
 
     <div class="card">
-      <h2>Manage Withdrawal Requests</h2>
-      <p class="muted">Send payment manually before marking a request as paid.</p>
-      <div id="adminWithdrawals">Loading withdrawals…</div>
+      <h2>Historical Creator-Fee Records</h2>
+      <p class="muted">Existing records are retained. New volume commissions are recorded through claims.</p>
+      <div id="adminFees"></div>
+    </div>
+
+    <div class="card">
+      <h2>Manage Withdrawals</h2>
+      <div id="adminWithdrawals">Loading…</div>
     </div>
   </section>
 </section>
@@ -262,48 +269,40 @@ const SUPABASE_KEY = "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const $ = id => document.getElementById(id);
+const money = value => "$" + Number(value || 0).toFixed(2);
+
 let currentUser = null;
 let currentProfile = null;
 let adminUsers = [];
-let myApprovedPoints = 0;
-let myApprovedTasks = 0;
-let myTotalTasks = 0;
+let currentBalance = 0;
 
-function message(text, type="success") {
-  $("message").replaceChildren();
-  const box=document.createElement("div");
-  box.className="status "+type;
-  box.textContent=text;
-  $("message").appendChild(box);
-  window.scrollTo({top:0,behavior:"smooth"});
+function message(text, type = "success") {
+  const el = $("message");
+  el.replaceChildren();
+  const box = document.createElement("div");
+  box.className = "status " + type;
+  box.textContent = text;
+  el.appendChild(box);
+  window.scrollTo({top:0, behavior:"smooth"});
 }
 
-function money(value) {
-  return "$"+Number(value||0).toFixed(2);
-}
-
-function textElement(tag,text) {
-  const el=document.createElement(tag);
-  el.textContent=text==null?"":String(text);
+function textElement(tag, text) {
+  const el = document.createElement(tag);
+  el.textContent = text == null ? "" : String(text);
   return el;
 }
 
-function button(label,handler,css="secondary") {
-  const b=document.createElement("button");
-  b.type="button";
-  b.className=css;
-  b.textContent=label;
-  b.addEventListener("click",handler);
+function button(label, handler, css = "secondary") {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = css;
+  b.textContent = label;
+  b.addEventListener("click", handler);
   return b;
 }
 
 function isAdmin(user) {
-  return user?.app_metadata?.role==="admin";
-}
-
-function showDashboard() {
-  $("authSection").classList.add("hidden");
-  $("dashboard").classList.remove("hidden");
+  return user?.app_metadata?.role === "admin";
 }
 
 function showLogin() {
@@ -315,289 +314,382 @@ function showLogin() {
 }
 
 async function finishSavedRegistration(user) {
-  const raw=localStorage.getItem("maco_ambassador_registration");
-  if(!raw)return true;
+  const raw = localStorage.getItem("maco_ambassador_registration");
+  if (!raw) return true;
 
   let details;
   try {
-    details=JSON.parse(raw);
+    details = JSON.parse(raw);
   } catch {
-    message("Registration details could not be read. Please contact the administrator.","error");
+    message("Registration details could not be read.", "error");
     return false;
   }
 
-  const {data:existing,error:lookupError}=await db
+  const {data: existing, error: lookupError} = await db
     .from("ambassador_profiles")
     .select("id")
-    .eq("id",user.id)
+    .eq("id", user.id)
     .maybeSingle();
 
-  if(lookupError) {
-    message("Could not check your application: "+lookupError.message,"error");
+  if (lookupError) {
+    message("Could not check application: " + lookupError.message, "error");
     return false;
   }
 
-  if(!existing) {
-    const {error}=await db.rpc("register_ambassador",{
-      p_username:details.username,
-      p_wallet_address:details.wallet,
-      p_project_focus:details.focus
+  if (!existing) {
+    const {error} = await db.rpc("register_ambassador", {
+      p_username: details.username,
+      p_wallet_address: details.wallet,
+      p_project_focus: details.focus
     });
 
-    if(error) {
-      message("Application setup failed: "+error.message,"error");
+    if (error) {
+      message("Application setup failed: " + error.message, "error");
       return false;
     }
   }
 
   localStorage.removeItem("maco_ambassador_registration");
-  message("Your application has been submitted.");
   return true;
 }
 
 async function loadProfile(user) {
-  currentUser=user;
-  currentProfile=null;
-  showDashboard();
+  currentUser = user;
 
-  $("welcome").textContent="Dashboard";
-  $("accountStatus").textContent="Loading account…";
+  $("authSection").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
   $("pendingCard").classList.add("hidden");
   $("ambassadorCard").classList.add("hidden");
   $("adminCard").classList.add("hidden");
 
-  const admin=isAdmin(user);
+  const admin = isAdmin(user);
 
-  const {data:profile,error}=await db
+  const {data: profile, error} = await db
     .from("ambassador_profiles")
     .select("*")
-    .eq("id",user.id)
+    .eq("id", user.id)
     .maybeSingle();
 
-  if(error) {
-    message("Profile error: "+error.message,"error");
-    return;
-  }
+  if (error) return message("Profile error: " + error.message, "error");
 
-  currentProfile=profile;
+  currentProfile = profile;
 
-  if(admin) {
+  if (admin) {
     $("adminCard").classList.remove("hidden");
-    $("welcome").textContent="Administrator Dashboard";
-    $("accountStatus").textContent="Administrator access";
+    $("welcome").textContent = "Administrator Dashboard";
+    $("accountStatus").textContent = "Administrator access";
     await loadAdmin();
   }
 
-  if(!profile) {
-    if(!admin) {
-      $("accountStatus").textContent="No ambassador application is linked to this account.";
-      message("If you just confirmed your email, log in again to finish your application.","error");
+  if (!profile) {
+    if (!admin) {
+      $("accountStatus").textContent = "No ambassador application is linked to this account.";
     }
     return;
   }
 
-  $("welcome").textContent="Welcome, "+profile.username;
-  $("accountStatus").textContent="Application status: "+profile.status;
+  $("welcome").textContent = "Welcome, " + profile.username;
+  $("accountStatus").textContent =
+    "Application status: " + profile.status +
+    " | Referral code: " + (profile.referral_code || "Not assigned");
 
-  if(profile.status==="approved") {
+  if (profile.status === "approved") {
     $("ambassadorCard").classList.remove("hidden");
     await loadAmbassador();
-  } else if(!admin) {
+  } else if (!admin) {
     $("pendingCard").classList.remove("hidden");
   }
 }
 
-async function loadTasks() {
-  const target=$("taskList");
-  target.replaceChildren();
-  $("submissionTask").replaceChildren(new Option("Choose a task",""));
-
-  const {data,error}=await db
-    .from("ambassador_tasks")
-    .select("*")
-    .eq("is_active",true)
-    .order("created_at",{ascending:false});
-
-  if(error) {
-    target.textContent="Unable to load tasks: "+error.message;
-    return;
-  }
-
-  if(!data?.length) {
-    target.textContent="No active tasks yet.";
-    return;
-  }
-
-  for(const task of data) {
-    const type=task.reward_type==="volume"?"volume":"points";
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("strong",task.title));
-    box.append(textElement("p",task.description||""));
-    box.append(textElement("p","Category: "+(task.category||"General")));
-    box.append(textElement("p",type==="volume"
-      ?"Dollar reward: "+money(task.reward_usd)
-      :"Points reward: "+Number(task.points_reward||0)+" points"));
-    if(task.deadline)box.append(textElement("small","Deadline: "+new Date(task.deadline).toLocaleString()));
-    target.appendChild(box);
-
-    const rewardLabel=type==="volume"
-      ?money(task.reward_usd)
-      :Number(task.points_reward||0)+" points";
-
-    $("submissionTask").add(new Option(task.title+" — "+rewardLabel,task.id));
-  }
-}
-
 async function loadAmbassador() {
-  if(!currentProfile)return;
+  if (!currentProfile) return;
 
-  const id=currentProfile.id;
+  const id = currentProfile.id;
 
-  const [fees,rewards,withdrawals,submissions,tasks]=await Promise.all([
-    db.from("ambassador_creator_fees").select("commission_usd").eq("ambassador_id",id),
-    db.from("ambassador_reward_ledger").select("amount_usd,reward_type").eq("ambassador_id",id),
-    db.from("ambassador_withdrawals").select("amount_usd,status").eq("ambassador_id",id),
+  const [fees, rewards, withdrawals, submissions, tasks, claims] = await Promise.all([
+    db.from("ambassador_creator_fees").select("commission_usd").eq("ambassador_id", id),
+    db.from("ambassador_reward_ledger").select("amount_usd,reward_type").eq("ambassador_id", id),
+    db.from("ambassador_withdrawals").select("*").eq("ambassador_id", id).order("created_at",{ascending:false}),
     db.from("ambassador_task_submissions")
       .select("*, ambassador_tasks(title,reward_type,points_reward,reward_usd,created_at)")
-      .eq("ambassador_id",id)
-      .order("submitted_at",{ascending:false}),
-    db.from("ambassador_tasks").select("id,created_at,is_active").order("created_at")
+      .eq("ambassador_id", id).order("submitted_at",{ascending:false}),
+    db.from("ambassador_tasks").select("id,created_at,is_active").order("created_at"),
+    db.from("ambassador_volume_claims").select("*")
+      .eq("ambassador_id", id).order("created_at",{ascending:false})
   ]);
 
-  if(fees.error||rewards.error||withdrawals.error||submissions.error||tasks.error) {
-    message("Some dashboard information could not be loaded. Check database permissions.","error");
+  for (const r of [fees,rewards,withdrawals,submissions,tasks,claims]) {
+    if (r.error) return message("Dashboard could not load: " + r.error.message, "error");
   }
 
-  const feeRows=fees.data||[];
-  const rewardRows=rewards.data||[];
-  const withdrawalRows=withdrawals.data||[];
-  const submissionRows=submissions.data||[];
-  const taskRows=tasks.data||[];
+  const feeRows = fees.data || [];
+  const rewardRows = rewards.data || [];
+  const withdrawalRows = withdrawals.data || [];
+  const submissionRows = submissions.data || [];
+  const taskRows = tasks.data || [];
+  const claimRows = claims.data || [];
 
-  const commission=feeRows.reduce((s,r)=>s+Number(r.commission_usd||0),0);
-  const volumeRewards=rewardRows
+  const oldCommission = feeRows.reduce((s,r)=>s+Number(r.commission_usd||0),0);
+  const dollarRewards = rewardRows
     .filter(r=>["volume","bonus"].includes(r.reward_type))
     .reduce((s,r)=>s+Number(r.amount_usd||0),0);
 
-  const reserved=withdrawalRows
-    .filter(r=>["pending","approved","paid"].includes(r.status))
-    .reduce((s,r)=>s+Number(r.amount_usd||0),0);
+  const approvedClaims = claimRows.filter(c=>c.status==="approved");
+  const magicClaims = approvedClaims.filter(c=>c.claim_type==="magic_number");
+  const arenaClaims = approvedClaims.filter(c=>c.claim_type==="trading_volume");
 
-  const balance=Math.max(0,commission+volumeRewards-reserved);
+  const magicVolume = magicClaims.reduce((s,c)=>s+Number(c.approved_volume_usd||0),0);
+  const magicCommission = magicClaims.reduce((s,c)=>s+Number(c.commission_usd||0),0);
+  const arenaVolume = arenaClaims.reduce((s,c)=>s+Number(c.approved_volume_usd||0),0);
+  const arenaCommission = arenaClaims.reduce((s,c)=>s+Number(c.commission_usd||0),0);
 
-  const approved=submissionRows.filter(r=>r.status==="approved");
-  myApprovedTasks=approved.length;
-  myApprovedPoints=approved.reduce((sum,r)=>sum+Number(r.points_awarded||0),0);
+  const reserved = withdrawalRows
+    .filter(w=>["pending","approved","paid"].includes(w.status))
+    .reduce((s,w)=>s+Number(w.amount_usd||0),0);
 
-  $("myPoints").textContent=String(myApprovedPoints);
-  $("myCompleted").textContent=String(myApprovedTasks);
-  $("commissionTotal").textContent=money(commission);
-  $("volumeTotal").textContent=money(volumeRewards);
-  $("availableBalance").textContent=money(balance);
+  currentBalance = Math.max(
+    0,
+    oldCommission + dollarRewards + magicCommission + arenaCommission - reserved
+  );
 
-  // This is an estimate of the completion denominator because the database
-  // does not contain a separate per-ambassador task-assignment table.
-  const joinedAt=currentProfile.created_at
-    ?new Date(currentProfile.created_at).getTime():0;
-  myTotalTasks=taskRows.filter(t=>new Date(t.created_at).getTime()>=joinedAt).length;
+  const approvedSubmissions = submissionRows.filter(s=>s.status==="approved");
+  $("myPoints").textContent = approvedSubmissions.reduce((s,r)=>s+Number(r.points_awarded||0),0);
+  $("myCompleted").textContent = approvedSubmissions.length;
+  $("commissionTotal").textContent = money(oldCommission);
+  $("volumeTotal").textContent = money(dollarRewards);
+  $("magicVolume").textContent = money(magicVolume);
+  $("magicCommission").textContent = money(magicCommission);
+  $("arenaVolume").textContent = money(arenaVolume);
+  $("arenaCommission").textContent = money(arenaCommission);
+  $("availableBalance").textContent = money(currentBalance);
 
-  await loadTasks();
+  renderClaims(claimRows);
   renderMySubmissions(submissionRows);
   renderMyWithdrawals(withdrawalRows);
+  await loadTasks();
   await loadLeaderboard();
 }
 
+function renderClaims(rows) {
+  const target = $("myClaims");
+  target.replaceChildren();
+
+  if (!rows.length) {
+    target.textContent = "No claims submitted yet.";
+    return;
+  }
+
+  const table = document.createElement("table");
+  const head = document.createElement("thead");
+  const tr = document.createElement("tr");
+
+  ["Date","Claim type","Claimed volume","Approved volume","Commission","Status","Review note"]
+    .forEach(label=>tr.appendChild(textElement("th",label)));
+
+  head.appendChild(tr);
+  table.appendChild(head);
+
+  const body = document.createElement("tbody");
+
+  rows.forEach(c=>{
+    const tr = document.createElement("tr");
+    const values = [
+      c.created_at ? new Date(c.created_at).toLocaleDateString() : "",
+      c.claim_type === "magic_number" ? "Magic Number" : "Volume Arena",
+      money(c.claimed_volume_usd),
+      c.approved_volume_usd == null ? "—" : money(c.approved_volume_usd),
+      money(c.commission_usd),
+      c.status,
+      c.review_note || "—"
+    ];
+    values.forEach(v=>tr.appendChild(textElement("td",v)));
+    body.appendChild(tr);
+  });
+
+  table.appendChild(body);
+  target.appendChild(table);
+}
+
+$("claimType").addEventListener("change",()=>{
+  $("referralCodeArea").classList.toggle("hidden",$("claimType").value!=="trading_volume");
+});
+
+$("claimForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+
+  if (!currentProfile || currentProfile.status !== "approved") {
+    return message("Only approved ambassadors can submit claims.", "error");
+  }
+
+  const type = $("claimType").value;
+  const amount = Number($("claimAmount").value);
+  const evidence = $("claimEvidence").value.trim();
+  const referralCode = $("claimReferralCode").value.trim();
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return message("Enter a valid claimed volume.", "error");
+  }
+
+  if (!evidence) return message("Evidence is required.", "error");
+
+  if (type === "trading_volume" && !referralCode) {
+    return message("Enter your existing Volume Arena referral code.", "error");
+  }
+
+  const {error} = await db.from("ambassador_volume_claims").insert({
+    ambassador_id: currentProfile.id,
+    claim_type: type,
+    referral_code: type === "trading_volume" ? referralCode : null,
+    claimed_volume_usd: amount,
+    evidence,
+    status: "pending",
+    commission_usd: 0
+  });
+
+  if (error) return message("Claim submission failed: " + error.message, "error");
+
+  $("claimForm").reset();
+  $("referralCodeArea").classList.add("hidden");
+  message("Claim submitted for administrator review.");
+  await loadAmbassador();
+});
+
+async function loadTasks() {
+  const target = $("taskList");
+  target.replaceChildren();
+  $("submissionTask").replaceChildren(new Option("Choose a task",""));
+
+  const {data,error} = await db.from("ambassador_tasks")
+    .select("*").eq("is_active",true).order("created_at",{ascending:false});
+
+  if (error) {
+    target.textContent = "Unable to load tasks: " + error.message;
+    return;
+  }
+
+  if (!data?.length) {
+    target.textContent = "No active tasks yet.";
+    return;
+  }
+
+  data.forEach(task=>{
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.appendChild(textElement("strong",task.title));
+    box.appendChild(textElement("p",task.description || ""));
+    box.appendChild(textElement("p","Category: " + (task.category || "General")));
+    box.appendChild(textElement("p",task.reward_type==="volume"
+      ? "Dollar reward: " + money(task.reward_usd)
+      : "Points reward: " + Number(task.points_reward || 0)));
+
+    if (task.deadline) {
+      box.appendChild(textElement("small","Deadline: "+new Date(task.deadline).toLocaleString()));
+    }
+
+    target.appendChild(box);
+
+    const rewardLabel = task.reward_type==="volume"
+      ? money(task.reward_usd)
+      : Number(task.points_reward||0)+" points";
+
+    $("submissionTask").add(new Option(task.title+" — "+rewardLabel,task.id));
+  });
+}
+
 function renderMySubmissions(rows) {
-  const target=$("mySubmissions");
+  const target = $("mySubmissions");
   target.replaceChildren(textElement("h3","Your submissions"));
 
-  if(!rows.length) {
-    target.append(textElement("p","No submissions yet."));
+  if (!rows.length) {
+    target.appendChild(textElement("p","No submissions yet."));
     return;
   }
 
   rows.forEach(row=>{
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("strong",row.ambassador_tasks?.title||("Task #"+row.task_id)));
-    box.append(textElement("p","Status: "+row.status));
-    if(row.status==="approved") {
-      box.append(textElement("p","Points awarded: "+Number(row.points_awarded||0)));
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.appendChild(textElement("strong",row.ambassador_tasks?.title || ("Task #"+row.task_id)));
+    box.appendChild(textElement("p","Status: "+row.status));
+
+    if (row.status==="approved") {
+      box.appendChild(textElement("p","Points awarded: "+Number(row.points_awarded||0)));
     }
-    if(row.admin_note)box.append(textElement("p","Administrator note: "+row.admin_note));
+
+    if (row.admin_note) box.appendChild(textElement("p","Administrator note: "+row.admin_note));
     target.appendChild(box);
   });
 }
 
 function renderMyWithdrawals(rows) {
-  const target=$("myWithdrawals");
+  const target = $("myWithdrawals");
   target.replaceChildren(textElement("h3","Your withdrawal requests"));
 
-  if(!rows.length) {
-    target.append(textElement("p","No withdrawal requests."));
+  if (!rows.length) {
+    target.appendChild(textElement("p","No withdrawal requests."));
     return;
   }
 
   rows.forEach(row=>{
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("p",money(row.amount_usd)+" — "+row.status));
-    if(row.payment_reference)box.append(textElement("p","Reference: "+row.payment_reference));
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.appendChild(textElement("p",money(row.amount_usd)+" — "+row.status));
+    if (row.payment_reference) box.appendChild(textElement("p","Reference: "+row.payment_reference));
     target.appendChild(box);
   });
 }
 
 async function loadLeaderboard() {
-  const target=$("leaderboard");
-  target.textContent="Loading leaderboard…";
+  const target = $("leaderboard");
+  target.textContent = "Loading leaderboard…";
 
-  const [profilesResult,submissionsResult,feesResult,rewardsResult]=await Promise.all([
+  const [profilesResult,submissionsResult,feesResult,rewardsResult] = await Promise.all([
     db.from("ambassador_profiles").select("id,username,status"),
     db.from("ambassador_task_submissions").select("ambassador_id,status,points_awarded"),
     db.from("ambassador_creator_fees").select("ambassador_id,commission_usd"),
     db.from("ambassador_reward_ledger").select("ambassador_id,amount_usd,reward_type")
   ]);
 
-  if(profilesResult.error||submissionsResult.error||feesResult.error||rewardsResult.error) {
-    target.textContent="Leaderboard unavailable. Check the database read permissions for these tables.";
+  if (profilesResult.error || submissionsResult.error || feesResult.error || rewardsResult.error) {
+    target.textContent = "Leaderboard unavailable. Check database read permissions.";
     return;
   }
 
-  const profiles=(profilesResult.data||[]).filter(p=>p.status==="approved");
-  const submissions=submissionsResult.data||[];
-  const fees=feesResult.data||[];
-  const rewards=rewardsResult.data||[];
+  const profiles = (profilesResult.data||[]).filter(p=>p.status==="approved");
+  const submissions = submissionsResult.data||[];
+  const fees = feesResult.data||[];
+  const rewards = rewardsResult.data||[];
 
-  const rows=profiles.map(profile=>{
-    const mine=submissions.filter(s=>s.ambassador_id===profile.id&&s.status==="approved");
-    const points=mine.reduce((sum,s)=>sum+Number(s.points_awarded||0),0);
-    const commission=fees.filter(f=>f.ambassador_id===profile.id)
+  const rows = profiles.map(profile=>{
+    const mine = submissions.filter(s=>s.ambassador_id===profile.id && s.status==="approved");
+    const points = mine.reduce((sum,s)=>sum+Number(s.points_awarded||0),0);
+    const commission = fees.filter(f=>f.ambassador_id===profile.id)
       .reduce((sum,f)=>sum+Number(f.commission_usd||0),0);
-    const dollars=rewards.filter(r=>r.ambassador_id===profile.id&&["volume","bonus"].includes(r.reward_type))
+    const dollars = rewards.filter(r=>r.ambassador_id===profile.id && ["volume","bonus"].includes(r.reward_type))
       .reduce((sum,r)=>sum+Number(r.amount_usd||0),0);
     return {username:profile.username,points,completed:mine.length,commission,dollars};
-  }).sort((a,b)=>b.points-a.points||b.completed-a.completed);
+  }).sort((a,b)=>b.points-a.points || b.completed-a.completed);
 
   target.replaceChildren();
 
-  if(!rows.length) {
-    target.textContent="No approved ambassadors on the leaderboard yet.";
+  if (!rows.length) {
+    target.textContent = "No approved ambassadors on the leaderboard yet.";
     return;
   }
 
-  const table=document.createElement("table");
-  const thead=document.createElement("thead");
-  const tr=document.createElement("tr");
-  ["Rank","Ambassador","Points","Tasks","Commission","Dollar rewards"].forEach(label=>{
-    tr.append(textElement("th",label));
-  });
-  thead.appendChild(tr);
-  table.appendChild(thead);
+  const table = document.createElement("table");
+  const head = document.createElement("thead");
+  const hr = document.createElement("tr");
 
-  const tbody=document.createElement("tbody");
+  ["Rank","Ambassador","Points","Tasks","Historical commission","Dollar rewards"]
+    .forEach(label=>hr.appendChild(textElement("th",label)));
+
+  head.appendChild(hr);
+  table.appendChild(head);
+
+  const body = document.createElement("tbody");
+
   rows.forEach((row,index)=>{
-    const tr=document.createElement("tr");
+    const tr = document.createElement("tr");
     [
       "#"+(index+1),
       row.username,
@@ -605,108 +697,94 @@ async function loadLeaderboard() {
       String(row.completed),
       money(row.commission),
       money(row.dollars)
-    ].forEach(value=>tr.append(textElement("td",value)));
-    tbody.appendChild(tr);
+    ].forEach(value=>tr.appendChild(textElement("td",value)));
+    body.appendChild(tr);
   });
-  table.appendChild(tbody);
+
+  table.appendChild(body);
   target.appendChild(table);
 }
 
 async function loadAdmin() {
-  const {data:profiles,error}=await db
-    .from("ambassador_profiles")
-    .select("*")
-    .order("created_at",{ascending:false});
+  const {data:profiles,error} = await db.from("ambassador_profiles")
+    .select("*").order("created_at",{ascending:false});
 
-  if(error) {
-    $("applicationsList").textContent="Could not load applications: "+error.message;
+  if (error) {
+    $("applicationsList").textContent = "Could not load applications: " + error.message;
     return;
   }
 
-  adminUsers=profiles||[];
+  adminUsers = profiles || [];
   renderApplications(adminUsers);
   fillAmbassadorSelectors(adminUsers);
 
   await Promise.all([
     loadAdminTasks(),
     loadAdminSubmissions(),
+    loadAdminClaims(),
     loadAdminFees(),
-    loadAdminRewards(),
     loadAdminWithdrawals()
   ]);
 }
 
 function fillAmbassadorSelectors(profiles) {
-  ["feeAmbassador","rewardAmbassador"].forEach(id=>{
-    const select=$(id);
-    select.replaceChildren(new Option("Choose ambassador",""));
-    profiles.filter(p=>p.status==="approved").forEach(p=>{
-      select.add(new Option(p.username+" — "+(p.email||""),p.id));
-    });
+  const select = $("rewardAmbassador");
+  select.replaceChildren(new Option("Choose ambassador",""));
+
+  profiles.filter(p=>p.status==="approved").forEach(p=>{
+    select.add(new Option(p.username+" — "+(p.email||""),p.id));
   });
 }
 
 function renderApplications(profiles) {
-  const target=$("applicationsList");
+  const target = $("applicationsList");
   target.replaceChildren();
 
-  const pending=profiles.filter(p=>p.status==="pending");
-  if(!pending.length)target.append(textElement("p","No pending applications."));
+  const pending = profiles.filter(p=>p.status==="pending");
+  if (!pending.length) target.appendChild(textElement("p","No pending applications."));
 
   pending.forEach(profile=>{
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("strong",profile.username));
-    box.append(textElement("p",profile.email||""));
-    box.append(textElement("p","Wallet: "+profile.wallet_address));
-    box.append(textElement("p","Focus: "+profile.project_focus));
-    box.append(button("Approve application",()=>changeProfileStatus(profile.id,"approved")));
-    box.append(button("Reject application",()=>changeProfileStatus(profile.id,"rejected"),"danger"));
-    target.appendChild(box);
-  });
-
-  const approved=profiles.filter(p=>p.status==="approved");
-  if(approved.length)target.append(textElement("h3","Approved ambassadors"));
-
-  approved.forEach(p=>{
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("p",p.username+" — "+(p.email||"")));
-    box.append(button("Suspend",()=>changeProfileStatus(p.id,"suspended"),"danger"));
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.appendChild(textElement("strong",profile.username));
+    box.appendChild(textElement("p",profile.email||""));
+    box.appendChild(textElement("p","Wallet: "+profile.wallet_address));
+    box.appendChild(textElement("p","Focus: "+profile.project_focus));
+    box.appendChild(button("Approve application",()=>changeProfileStatus(profile.id,"approved")));
+    box.appendChild(button("Reject application",()=>changeProfileStatus(profile.id,"rejected"),"danger"));
     target.appendChild(box);
   });
 }
 
 async function changeProfileStatus(id,status) {
-  const {error}=await db.from("ambassador_profiles").update({status}).eq("id",id);
-  if(error)return message("Could not update application: "+error.message,"error");
-  message("Application status updated to "+status+".");
+  const {error} = await db.from("ambassador_profiles").update({status}).eq("id",id);
+  if (error) return message("Could not update application: "+error.message,"error");
+  message("Application status updated.");
   await loadAdmin();
 }
 
 async function loadAdminTasks() {
-  const target=$("adminTasks");
+  const target = $("adminTasks");
   target.replaceChildren();
 
-  const {data,error}=await db.from("ambassador_tasks").select("*").order("created_at",{ascending:false});
-  if(error) {
-    target.textContent="Could not load tasks: "+error.message;
+  const {data,error} = await db.from("ambassador_tasks").select("*").order("created_at",{ascending:false});
+  if (error) {
+    target.textContent = "Could not load tasks: "+error.message;
     return;
   }
 
   (data||[]).forEach(task=>{
-    const type=task.reward_type==="volume"?"volume":"points";
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("strong",task.title));
-    box.append(textElement("p",type==="volume"
-      ?"Dollar reward: "+money(task.reward_usd)
-      :"Points reward: "+Number(task.points_reward||0)));
-    box.append(textElement("p",task.is_active?"Active":"Inactive"));
-    box.append(button(task.is_active?"Deactivate task":"Activate task",async()=>{
-      const {error:e}=await db.from("ambassador_tasks")
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.appendChild(textElement("strong",task.title));
+    box.appendChild(textElement("p",task.reward_type==="volume"
+      ? "Dollar reward: "+money(task.reward_usd)
+      : "Points reward: "+Number(task.points_reward||0)));
+    box.appendChild(textElement("p",task.is_active?"Active":"Inactive"));
+    box.appendChild(button(task.is_active?"Deactivate task":"Activate task",async()=>{
+      const {error:e} = await db.from("ambassador_tasks")
         .update({is_active:!task.is_active}).eq("id",task.id);
-      if(e)return message("Task update failed: "+e.message,"error");
+      if (e) return message("Task update failed: "+e.message,"error");
       await loadAdminTasks();
     }));
     target.appendChild(box);
@@ -714,110 +792,191 @@ async function loadAdminTasks() {
 }
 
 async function loadAdminSubmissions() {
-  const target=$("adminSubmissions");
+  const target = $("adminSubmissions");
   target.replaceChildren();
 
-  const {data:rows,error}=await db.from("ambassador_task_submissions")
+  const {data:rows,error} = await db.from("ambassador_task_submissions")
     .select("*").order("submitted_at",{ascending:false});
 
-  if(error) {
-    target.textContent="Could not load submissions: "+error.message;
-    return;
-  }
-  if(!rows?.length) {
-    target.textContent="No submissions yet.";
+  if (error) {
+    target.textContent = "Could not load submissions: "+error.message;
     return;
   }
 
-  const [profilesResult,tasksResult]=await Promise.all([
+  const [profilesResult,tasksResult] = await Promise.all([
     db.from("ambassador_profiles").select("id,username,email"),
     db.from("ambassador_tasks").select("*")
   ]);
 
-  if(profilesResult.error||tasksResult.error) {
-    target.textContent="Could not load ambassador and task details.";
+  if (profilesResult.error || tasksResult.error) {
+    target.textContent = "Could not load task details.";
     return;
   }
 
-  const profiles=profilesResult.data||[];
-  const tasks=tasksResult.data||[];
+  const profiles = profilesResult.data||[];
+  const tasks = tasksResult.data||[];
 
-  rows.forEach(row=>{
-    const profile=profiles.find(p=>p.id===row.ambassador_id);
-    const task=tasks.find(t=>t.id===row.task_id);
-    const type=task?.reward_type==="volume"?"volume":"points";
+  (rows||[]).forEach(row=>{
+    const profile = profiles.find(p=>p.id===row.ambassador_id);
+    const task = tasks.find(t=>t.id===row.task_id);
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.appendChild(textElement("strong",(profile?.username||row.ambassador_id)+" — "+(task?.title||row.task_id)));
+    box.appendChild(textElement("p","Proof: "+row.proof));
+    box.appendChild(textElement("p","Status: "+row.status));
 
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("strong",
-      (profile?.username||row.ambassador_id)+" — "+(task?.title||("Task #"+row.task_id))));
-    box.append(textElement("p","Proof: "+row.proof));
-    box.append(textElement("p","Status: "+row.status));
+    if (row.status==="pending") {
+      const note = document.createElement("input");
+      note.placeholder = "Optional administrator note";
+      box.appendChild(note);
 
-    if(row.status==="pending") {
-      const note=document.createElement("input");
-      note.placeholder="Optional administrator note";
-      box.append(note);
+      box.appendChild(button("Approve proof",async()=>{
+        if (!task) return message("Task not found.","error");
 
-      box.append(button("Approve proof",async()=>{
-        if(!task)return message("Task details could not be found.","error");
+        const points = task.reward_type==="points" ? Number(task.points_reward||0) : 0;
+        const dollarReward = task.reward_type==="volume" ? Number(task.reward_usd||0) : 0;
 
-        const points=type==="points"?Number(task.points_reward||0):0;
-        const dollarReward=type==="volume"?Number(task.reward_usd||0):0;
-
-        if(type==="points"&&points<0)return message("Invalid points reward.","error");
-        if(type==="volume"&&dollarReward<0)return message("Invalid dollar reward.","error");
-
-        const {data:updated,error:e}=await db
-          .from("ambassador_task_submissions")
+        const {data:updated,error:e} = await db.from("ambassador_task_submissions")
           .update({
             status:"approved",
             admin_note:note.value.trim()||null,
             reviewed_at:new Date().toISOString(),
             points_awarded:points
           })
-          .eq("id",row.id)
-          .eq("status","pending")
-          .select("id");
+          .eq("id",row.id).eq("status","pending").select("id");
 
-        if(e)return message("Approval failed: "+e.message,"error");
-        if(!updated?.length)return message("This submission has already been reviewed. Refresh the list.","error");
+        if (e) return message("Approval failed: "+e.message,"error");
+        if (!updated?.length) return message("Submission already reviewed.","error");
 
-        if(type==="volume"&&dollarReward>0) {
-          const {error:rewardError}=await db.from("ambassador_reward_ledger").insert({
+        if (dollarReward>0) {
+          const {error:rewardError} = await db.from("ambassador_reward_ledger").insert({
             ambassador_id:row.ambassador_id,
             amount_usd:dollarReward,
             reward_type:"volume",
-            description:"Approved volume task: "+task.title
+            description:"Approved task: "+task.title
           });
 
-          if(rewardError) {
-            message("Proof approved, but the dollar reward failed to record. Do not approve it again. Check the ledger: "+rewardError.message,"error");
+          if (rewardError) {
+            message("Task approved but reward recording failed: "+rewardError.message,"error");
             await loadAdminSubmissions();
             return;
           }
         }
 
-        message(type==="points"
-          ?"Proof approved. Points awarded: "+points
-          :"Proof approved. Dollar reward recorded: "+money(dollarReward));
-
+        message("Task submission approved.");
         await loadAdminSubmissions();
       }));
 
-      box.append(button("Reject proof",async()=>{
-        const {error:e}=await db.from("ambassador_task_submissions")
+      box.appendChild(button("Reject proof",async()=>{
+        const {error:e} = await db.from("ambassador_task_submissions")
           .update({
             status:"rejected",
             admin_note:note.value.trim()||null,
             reviewed_at:new Date().toISOString()
           })
-          .eq("id",row.id)
-          .eq("status","pending");
+          .eq("id",row.id).eq("status","pending");
 
-        if(e)return message("Rejection failed: "+e.message,"error");
-        message("Proof rejected.");
+        if (e) return message("Rejection failed: "+e.message,"error");
+        message("Submission rejected.");
         await loadAdminSubmissions();
+      },"danger"));
+    }
+
+    target.appendChild(box);
+  });
+
+  if (!rows?.length) target.textContent = "No submissions yet.";
+}
+
+async function loadAdminClaims() {
+  const target = $("adminClaims");
+  target.replaceChildren();
+
+  const {data:claims,error} = await db.from("ambassador_volume_claims")
+    .select("*").order("created_at",{ascending:false});
+
+  if (error) {
+    target.textContent = "Could not load volume claims: "+error.message;
+    return;
+  }
+
+  if (!claims?.length) {
+    target.textContent = "No volume claims submitted.";
+    return;
+  }
+
+  claims.forEach(claim=>{
+    const profile = adminUsers.find(p=>p.id===claim.ambassador_id);
+    const box = document.createElement("div");
+    box.className = "tile";
+
+    box.appendChild(textElement("strong",profile?.username||claim.ambassador_id));
+    box.appendChild(textElement("p","Type: "+(claim.claim_type==="magic_number"?"Magic Number — 2.5%":"Volume Arena — 1.5%")));
+    box.appendChild(textElement("p","Referral code: "+(claim.referral_code||"Not applicable")));
+    box.appendChild(textElement("p","Claimed volume: "+money(claim.claimed_volume_usd)));
+    box.appendChild(textElement("p","Evidence: "+claim.evidence));
+    box.appendChild(textElement("p","Status: "+claim.status));
+    if (claim.approved_volume_usd!=null) {
+      box.appendChild(textElement("p","Approved volume: "+money(claim.approved_volume_usd)));
+      box.appendChild(textElement("p","Calculated commission: "+money(claim.commission_usd)));
+    }
+    if (claim.review_note) box.appendChild(textElement("p","Review note: "+claim.review_note));
+
+    if (claim.status==="pending") {
+      const approvedInput = document.createElement("input");
+      approvedInput.type = "number";
+      approvedInput.min = "0";
+      approvedInput.max = String(claim.claimed_volume_usd);
+      approvedInput.step = "0.01";
+      approvedInput.placeholder = "Approved volume in USD";
+      box.appendChild(approvedInput);
+
+      const note = document.createElement("input");
+      note.placeholder = "Optional review note";
+      box.appendChild(note);
+
+      box.appendChild(button("Approve claim",async()=>{
+        const approvedVolume = Number(approvedInput.value);
+
+        if (!Number.isFinite(approvedVolume) ||
+            approvedVolume<0 ||
+            approvedVolume>Number(claim.claimed_volume_usd)) {
+          return message("Approved volume must be between zero and the claimed volume.","error");
+        }
+
+        const {error:e} = await db.from("ambassador_volume_claims")
+          .update({
+            status:"approved",
+            approved_volume_usd:approvedVolume,
+            review_note:note.value.trim()||null,
+            reviewed_by:currentUser.id,
+            reviewed_at:new Date().toISOString()
+          })
+          .eq("id",claim.id).eq("status","pending");
+
+        if (e) return message("Claim approval failed: "+e.message,"error");
+
+        message("Claim approved. The database trigger should calculate the commission.");
+        await loadAdminClaims();
+        if (currentProfile) await loadAmbassador();
+      }));
+
+      box.appendChild(button("Reject claim",async()=>{
+        const {error:e} = await db.from("ambassador_volume_claims")
+          .update({
+            status:"rejected",
+            approved_volume_usd:null,
+            commission_usd:0,
+            review_note:note.value.trim()||null,
+            reviewed_by:currentUser.id,
+            reviewed_at:new Date().toISOString()
+          })
+          .eq("id",claim.id).eq("status","pending");
+
+        if (e) return message("Claim rejection failed: "+e.message,"error");
+
+        message("Claim rejected.");
+        await loadAdminClaims();
       },"danger"));
     }
 
@@ -826,120 +985,96 @@ async function loadAdminSubmissions() {
 }
 
 async function loadAdminFees() {
-  const target=$("adminFees");
+  const target = $("adminFees");
   target.replaceChildren();
 
-  const {data:rows,error}=await db.from("ambassador_creator_fees")
+  const {data:rows,error} = await db.from("ambassador_creator_fees")
     .select("*").order("created_at",{ascending:false});
 
-  if(error) {
-    target.textContent="Could not load creator fees: "+error.message;
+  if (error) {
+    target.textContent = "Could not load historical fees: "+error.message;
     return;
   }
-  if(!rows?.length) {
-    target.textContent="No verified fee records yet.";
+
+  if (!rows?.length) {
+    target.textContent = "No historical creator-fee records.";
     return;
   }
 
   rows.forEach(row=>{
-    const profile=adminUsers.find(p=>p.id===row.ambassador_id);
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("p",
-      (profile?.username||row.ambassador_id)+" — Fees: "+money(row.amount_usd)+
-      " — Commission: "+money(row.commission_usd)));
-    box.append(textElement("small",row.reference_note||"No reference"));
-    target.appendChild(box);
-  });
-}
-
-async function loadAdminRewards() {
-  const target=$("adminRewards");
-  target.replaceChildren();
-
-  const {data:rows,error}=await db.from("ambassador_reward_ledger")
-    .select("*").order("created_at",{ascending:false});
-
-  if(error) {
-    target.textContent="Could not load rewards: "+error.message;
-    return;
-  }
-  if(!rows?.length) {
-    target.textContent="No dollar rewards recorded yet.";
-    return;
-  }
-
-  rows.forEach(row=>{
-    const profile=adminUsers.find(p=>p.id===row.ambassador_id);
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("p",
-      (profile?.username||row.ambassador_id)+" — "+money(row.amount_usd)+
-      " — "+row.reward_type));
-    box.append(textElement("small",row.description||""));
+    const profile = adminUsers.find(p=>p.id===row.ambassador_id);
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.appendChild(textElement("p",
+      (profile?.username||row.ambassador_id)+
+      " — Fees: "+money(row.amount_usd)+
+      " — Historical commission: "+money(row.commission_usd)));
+    box.appendChild(textElement("small",row.reference_note||"No reference"));
     target.appendChild(box);
   });
 }
 
 async function loadAdminWithdrawals() {
-  const target=$("adminWithdrawals");
+  const target = $("adminWithdrawals");
   target.replaceChildren();
 
-  const {data:rows,error}=await db.from("ambassador_withdrawals")
+  const {data:rows,error} = await db.from("ambassador_withdrawals")
     .select("*").order("created_at",{ascending:false});
 
-  if(error) {
-    target.textContent="Could not load withdrawals: "+error.message;
+  if (error) {
+    target.textContent = "Could not load withdrawals: "+error.message;
     return;
   }
-  if(!rows?.length) {
-    target.textContent="No withdrawal requests yet.";
+
+  if (!rows?.length) {
+    target.textContent = "No withdrawal requests yet.";
     return;
   }
 
   rows.forEach(row=>{
-    const profile=adminUsers.find(p=>p.id===row.ambassador_id);
-    const box=document.createElement("div");
-    box.className="tile";
-    box.append(textElement("strong",
-      (profile?.username||row.ambassador_id)+" — "+money(row.amount_usd)));
-    box.append(textElement("p","Wallet: "+row.wallet_address));
-    box.append(textElement("p","Status: "+row.status));
+    const profile = adminUsers.find(p=>p.id===row.ambassador_id);
+    const box = document.createElement("div");
+    box.className = "tile";
+    box.appendChild(textElement("strong",(profile?.username||row.ambassador_id)+" — "+money(row.amount_usd)));
+    box.appendChild(textElement("p","Wallet: "+row.wallet_address));
+    box.appendChild(textElement("p","Status: "+row.status));
 
-    if(["pending","approved"].includes(row.status)) {
-      const ref=document.createElement("input");
-      ref.placeholder="Payment reference / transaction hash";
-      box.append(ref);
+    if (["pending","approved"].includes(row.status)) {
+      const ref = document.createElement("input");
+      ref.placeholder = "Payment reference / transaction hash";
+      box.appendChild(ref);
 
-      box.append(button("Mark approved",async()=>{
-        const {error:e}=await db.from("ambassador_withdrawals")
+      box.appendChild(button("Mark approved",async()=>{
+        const {error:e} = await db.from("ambassador_withdrawals")
           .update({status:"approved"}).eq("id",row.id);
-        if(e)return message(e.message,"error");
+        if (e) return message(e.message,"error");
         message("Withdrawal approved.");
         await loadAdminWithdrawals();
       }));
 
-      box.append(button("Mark paid",async()=>{
-        if(!ref.value.trim())return message("Enter the payment reference first.","error");
-        if(!confirm("Confirm you have sent this payment manually?"))return;
+      box.appendChild(button("Mark paid",async()=>{
+        if (!ref.value.trim()) return message("Enter the payment reference first.","error");
+        if (!confirm("Confirm that you have sent the payment manually?")) return;
 
-        const {error:e}=await db.from("ambassador_withdrawals")
+        const {error:e} = await db.from("ambassador_withdrawals")
           .update({
             status:"paid",
             payment_reference:ref.value.trim(),
             paid_at:new Date().toISOString()
           }).eq("id",row.id);
 
-        if(e)return message(e.message,"error");
+        if (e) return message(e.message,"error");
         message("Withdrawal marked as paid.");
         await loadAdminWithdrawals();
       }));
 
-      box.append(button("Reject request",async()=>{
-        if(!confirm("Reject this withdrawal request?"))return;
-        const {error:e}=await db.from("ambassador_withdrawals")
+      box.appendChild(button("Reject request",async()=>{
+        if (!confirm("Reject this withdrawal request?")) return;
+
+        const {error:e} = await db.from("ambassador_withdrawals")
           .update({status:"rejected"}).eq("id",row.id);
-        if(e)return message(e.message,"error");
+
+        if (e) return message(e.message,"error");
         message("Withdrawal rejected.");
         await loadAdminWithdrawals();
       },"danger"));
@@ -953,28 +1088,27 @@ async function loadAdminWithdrawals() {
 $("registerForm").addEventListener("submit",async event=>{
   event.preventDefault();
 
-  const details={
+  const details = {
     username:$("regUsername").value.trim(),
     wallet:$("regWallet").value.trim(),
     focus:$("regFocus").value
   };
-  const email=$("regEmail").value.trim();
-  const password=$("regPassword").value;
+  const email = $("regEmail").value.trim();
+  const password = $("regPassword").value;
 
-  if(details.username.length<2||details.wallet.length<5) {
+  if (details.username.length<2 || details.wallet.length<5) {
     return message("Enter a valid username and wallet address.","error");
   }
-
-  if(password.length<8)return message("Password must be at least 8 characters.","error");
+  if (password.length<8) return message("Password must be at least 8 characters.","error");
 
   localStorage.setItem("maco_ambassador_registration",JSON.stringify(details));
 
-  const {data,error}=await db.auth.signUp({email,password});
-  if(error)return message(error.message,"error");
+  const {data,error} = await db.auth.signUp({email,password});
+  if (error) return message(error.message,"error");
 
-  if(data.session&&data.user) {
-    const ok=await finishSavedRegistration(data.user);
-    if(ok)await loadProfile(data.user);
+  if (data.session && data.user) {
+    const ok = await finishSavedRegistration(data.user);
+    if (ok) await loadProfile(data.user);
   } else {
     message("Account created. Confirm your email, then log in on this device to complete your application.");
   }
@@ -984,59 +1118,58 @@ $("registerForm").addEventListener("submit",async event=>{
 $("loginForm").addEventListener("submit",async event=>{
   event.preventDefault();
 
-  const {data,error}=await db.auth.signInWithPassword({
+  const {data,error} = await db.auth.signInWithPassword({
     email:$("loginEmail").value.trim(),
     password:$("loginPassword").value
   });
 
-  if(error)return message(error.message,"error");
+  if (error) return message(error.message,"error");
 
-  if(data.user) {
-    const ok=await finishSavedRegistration(data.user);
-    if(ok)await loadProfile(data.user);
+  if (data.user) {
+    const ok = await finishSavedRegistration(data.user);
+    if (ok) await loadProfile(data.user);
   }
 });
 
 /* Logout */
 $("logoutButton").addEventListener("click",async()=>{
-  const {error}=await db.auth.signOut();
-  if(error)return message(error.message,"error");
-  currentUser=null;
-  currentProfile=null;
+  const {error} = await db.auth.signOut();
+  if (error) return message(error.message,"error");
+
+  currentUser = null;
+  currentProfile = null;
   showLogin();
 });
 
-/* Switch the task creation fields */
+/* Task reward fields */
 $("taskType").addEventListener("change",()=>{
-  const volume=$("taskType").value==="volume";
+  const volume = $("taskType").value==="volume";
   $("pointsRewardField").classList.toggle("hidden",volume);
   $("dollarRewardField").classList.toggle("hidden",!volume);
-  $("taskPoints").required=!volume;
-  $("taskReward").required=volume;
+  $("taskPoints").required = !volume;
+  $("taskReward").required = volume;
 });
 
-/* Submit proof */
+/* Task submission */
 $("submissionForm").addEventListener("submit",async event=>{
   event.preventDefault();
-  if(!currentProfile)return message("Ambassador profile not found.","error");
 
-  const taskId=Number($("submissionTask").value);
-  const proof=$("submissionProof").value.trim();
-  if(!taskId||!proof)return message("Choose a task and provide proof.","error");
-
-  const {data:existing,error:checkError}=await db
-    .from("ambassador_task_submissions")
-    .select("id,status")
-    .eq("ambassador_id",currentProfile.id)
-    .eq("task_id",taskId);
-
-  if(checkError)return message("Could not check previous submissions: "+checkError.message,"error");
-
-  if(existing?.length) {
-    return message("You already have a submission for this task. Contact an administrator if you need it reopened.","error");
+  if (!currentProfile || currentProfile.status!=="approved") {
+    return message("An approved ambassador profile is required.","error");
   }
 
-  const {error}=await db.from("ambassador_task_submissions").insert({
+  const taskId = Number($("submissionTask").value);
+  const proof = $("submissionProof").value.trim();
+
+  if (!taskId || !proof) return message("Choose a task and provide proof.","error");
+
+  const {data:existing,error:checkError} = await db.from("ambassador_task_submissions")
+    .select("id,status").eq("ambassador_id",currentProfile.id).eq("task_id",taskId);
+
+  if (checkError) return message("Could not check previous submissions: "+checkError.message,"error");
+  if (existing?.length) return message("You already submitted this task. Contact an administrator if it needs reopening.","error");
+
+  const {error} = await db.from("ambassador_task_submissions").insert({
     ambassador_id:currentProfile.id,
     task_id:taskId,
     proof,
@@ -1044,103 +1177,72 @@ $("submissionForm").addEventListener("submit",async event=>{
     points_awarded:0
   });
 
-  if(error)return message("Submission failed: "+error.message,"error");
+  if (error) return message("Submission failed: "+error.message,"error");
 
-  $("submissionProof").value="";
+  $("submissionProof").value = "";
   message("Proof submitted for administrator review.");
   await loadAmbassador();
 });
 
-/* Request withdrawal */
+/* Withdrawal request */
 $("withdrawalForm").addEventListener("submit",async event=>{
   event.preventDefault();
-  if(!currentProfile)return message("Ambassador profile not found.","error");
 
-  const amount=Number($("withdrawAmount").value);
-  const wallet=$("withdrawWallet").value.trim();
-
-  if(amount<50)return message("Minimum withdrawal is $50.","error");
-  if(!wallet)return message("Enter the receiving wallet address.","error");
-
-  const [fees,rewards,withdrawals,submissions,tasks]=await Promise.all([
-    db.from("ambassador_creator_fees").select("commission_usd").eq("ambassador_id",currentProfile.id),
-    db.from("ambassador_reward_ledger").select("amount_usd,reward_type").eq("ambassador_id",currentProfile.id),
-    db.from("ambassador_withdrawals").select("amount_usd,status").eq("ambassador_id",currentProfile.id),
-    db.from("ambassador_task_submissions").select("task_id,status").eq("ambassador_id",currentProfile.id),
-    db.from("ambassador_tasks").select("id,created_at")
-  ]);
-
-  if(fees.error||rewards.error||withdrawals.error||submissions.error||tasks.error) {
-    return message("Could not verify balance or task completion. Try again.","error");
+  if (!currentProfile || currentProfile.status!=="approved") {
+    return message("An approved ambassador profile is required.","error");
   }
 
-  const commission=(fees.data||[]).reduce((s,r)=>s+Number(r.commission_usd||0),0);
-  const dollarRewards=(rewards.data||[])
-    .filter(r=>["volume","bonus"].includes(r.reward_type))
-    .reduce((s,r)=>s+Number(r.amount_usd||0),0);
-  const reserved=(withdrawals.data||[])
-    .filter(r=>["pending","approved","paid"].includes(r.status))
-    .reduce((s,r)=>s+Number(r.amount_usd||0),0);
-  const balance=Math.max(0,commission+dollarRewards-reserved);
+  const amount = Number($("withdrawAmount").value);
+  const wallet = $("withdrawWallet").value.trim();
 
-  if(amount>balance)return message("Your available balance is "+money(balance)+".","error");
+  if (!Number.isFinite(amount) || amount<50) return message("Minimum withdrawal is $50.","error");
+  if (!wallet) return message("Enter the receiving wallet address.","error");
 
-  const joinedAt=currentProfile.created_at
-    ?new Date(currentProfile.created_at).getTime():0;
-  const applicableTasks=(tasks.data||[])
-    .filter(t=>new Date(t.created_at).getTime()>=joinedAt);
-  const total=applicableTasks.length;
-  const approvedIds=new Set((submissions.data||[])
-    .filter(s=>s.status==="approved").map(s=>String(s.task_id)));
-  const completed=applicableTasks.filter(t=>approvedIds.has(String(t.id))).length;
-
-  if(total===0)return message("No applicable tasks were found. Contact the administrator.","error");
-
-  if(completed*100<total*75) {
-    return message(
-      "Withdrawal not eligible yet. You have "+completed+" approved tasks out of "+total+
-      " applicable tasks. You must complete at least 75%.",
-      "error"
-    );
+  /*
+    The displayed balance includes approved volume commissions.
+    The database must also include these commissions in its own withdrawal
+    validation function before volume commissions can be withdrawn reliably.
+  */
+  if (amount>currentBalance) {
+    return message("Your displayed available balance is "+money(currentBalance)+".","error");
   }
 
-  const {error}=await db.from("ambassador_withdrawals").insert({
+  const {error} = await db.from("ambassador_withdrawals").insert({
     ambassador_id:currentProfile.id,
     amount_usd:amount,
     wallet_address:wallet
   });
 
-  if(error)return message("Withdrawal request failed: "+error.message,"error");
+  if (error) return message("Withdrawal request failed: "+error.message,"error");
 
-  $("withdrawAmount").value="";
-  message("Withdrawal request submitted. Payment is manual and subject to review.");
+  $("withdrawAmount").value = "";
+  message("Withdrawal request submitted for review.");
   await loadAmbassador();
 });
 
-/* Create a points task or volume task */
+/* Create a task */
 $("taskForm").addEventListener("submit",async event=>{
   event.preventDefault();
 
-  if(!isAdmin(currentUser))return message("Administrator access required.","error");
+  if (!isAdmin(currentUser)) return message("Administrator access required.","error");
 
-  const title=$("taskTitle").value.trim();
-  const description=$("taskDescription").value.trim();
-  const category=$("taskCategory").value.trim()||"general";
-  const type=$("taskType").value;
-  const deadline=$("taskDeadline").value;
+  const title = $("taskTitle").value.trim();
+  const description = $("taskDescription").value.trim();
+  const category = $("taskCategory").value.trim() || "general";
+  const type = $("taskType").value;
+  const deadline = $("taskDeadline").value;
+  const points = Number($("taskPoints").value);
+  const dollarReward = Number($("taskReward").value);
 
-  const points=Number($("taskPoints").value);
-  const dollarReward=Number($("taskReward").value);
-
-  if(!title||!description)return message("Complete the task title and description.","error");
-  if(type==="points"&&(!Number.isInteger(points)||points<1)) {
+  if (!title || !description) return message("Complete the task title and description.","error");
+  if (type==="points" && (!Number.isInteger(points)||points<1)) {
     return message("Enter a whole-number points reward greater than zero.","error");
   }
-  if(type==="volume"&&(!Number.isFinite(dollarReward)||dollarReward<=0)) {
+  if (type==="volume" && (!Number.isFinite(dollarReward)||dollarReward<=0)) {
     return message("Enter a dollar reward greater than zero.","error");
   }
 
-  const {error}=await db.from("ambassador_tasks").insert({
+  const {error} = await db.from("ambassador_tasks").insert({
     title,
     description,
     category,
@@ -1151,93 +1253,64 @@ $("taskForm").addEventListener("submit",async event=>{
     is_active:true
   });
 
-  if(error)return message("Task creation failed: "+error.message,"error");
+  if (error) return message("Task creation failed: "+error.message,"error");
 
   $("taskForm").reset();
-  $("taskType").value="points";
+  $("taskType").value = "points";
   $("taskType").dispatchEvent(new Event("change"));
-  message("Task created successfully.");
+  message("Task created.");
   await loadAdminTasks();
 });
 
-/* Record verified creator fees */
-$("feeForm").addEventListener("submit",async event=>{
-  event.preventDefault();
-  if(!isAdmin(currentUser))return message("Administrator access required.","error");
-
-  const ambassadorId=$("feeAmbassador").value;
-  const amount=Number($("feeAmount").value);
-  const reference=$("feeReference").value.trim();
-
-  if(!ambassadorId||amount<=0||!reference) {
-    return message("Complete all creator-fee fields.","error");
-  }
-
-  const commission=Math.round(amount*0.05*100)/100;
-
-  const {error}=await db.from("ambassador_creator_fees").insert({
-    ambassador_id:ambassadorId,
-    amount_usd:amount,
-    commission_usd:commission,
-    reference_note:reference,
-    verified_by:currentUser.id
-  });
-
-  if(error)return message("Could not record creator fees: "+error.message,"error");
-
-  $("feeForm").reset();
-  message("Verified fees recorded. Commission added: "+money(commission));
-  await loadAdminFees();
-});
-
-/* Add a dollar bonus */
+/* Add bonus */
 $("rewardForm").addEventListener("submit",async event=>{
   event.preventDefault();
-  if(!isAdmin(currentUser))return message("Administrator access required.","error");
 
-  const ambassadorId=$("rewardAmbassador").value;
-  const amount=Number($("rewardAmount").value);
-  const description=$("rewardDescription").value.trim();
+  if (!isAdmin(currentUser)) return message("Administrator access required.","error");
 
-  if(!ambassadorId||amount<=0||!description) {
+  const ambassadorId = $("rewardAmbassador").value;
+  const amount = Number($("rewardAmount").value);
+  const description = $("rewardDescription").value.trim();
+
+  if (!ambassadorId || !Number.isFinite(amount) || amount<=0 || !description) {
     return message("Complete all bonus fields.","error");
   }
 
-  const {error}=await db.from("ambassador_reward_ledger").insert({
+  const {error} = await db.from("ambassador_reward_ledger").insert({
     ambassador_id:ambassadorId,
     amount_usd:amount,
     reward_type:"bonus",
     description
   });
 
-  if(error)return message("Could not add bonus: "+error.message,"error");
+  if (error) return message("Bonus recording failed: "+error.message,"error");
 
   $("rewardForm").reset();
-  message("Dollar bonus added.");
-  await loadAdminRewards();
+  message("Bonus recorded.");
+  await loadAdmin();
 });
 
 $("refreshLeaderboard").addEventListener("click",loadLeaderboard);
 
-/* Restore the signed-in session */
+/* Restore a saved login */
+(async()=>{
+  const {data,error} = await db.auth.getSession();
+
+  if (error) return message("Could not restore login: "+error.message,"error");
+
+  if (data.session?.user) {
+    const ok = await finishSavedRegistration(data.session.user);
+    if (ok) await loadProfile(data.session.user);
+  }
+})();
+
 db.auth.onAuthStateChange((event,session)=>{
-  if(session?.user) {
-    setTimeout(()=>loadProfile(session.user),0);
-  } else {
-    currentUser=null;
-    currentProfile=null;
+  if (event==="SIGNED_OUT") {
+    currentUser = null;
+    currentProfile = null;
     showLogin();
   }
 });
-
-(async function start(){
-  $("taskType").dispatchEvent(new Event("change"));
-
-  const {data,error}=await db.auth.getSession();
-  if(error)return message("Could not check login session: "+error.message,"error");
-
-  if(data.session?.user)await loadProfile(data.session.user);
-})();
 </script>
 </body>
 </html>
