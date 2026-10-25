@@ -13,7 +13,6 @@
       --text: #f3f6fc;
       --muted: #9aa8bd;
       --accent: #39e6a5;
-      --accent-dark: #0b815a;
       --danger: #ff7373;
     }
 
@@ -209,6 +208,7 @@
       font-size: 14px;
       margin-bottom: 14px;
       overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
 
     .notice.success {
@@ -254,7 +254,8 @@
 
   <main>
     <section class="hero">
-      <h1>Choose Your Number.<br>
+      <h1>
+        Choose Your Number.<br>
         <span class="highlight">Win MACO Rewards.</span>
       </h1>
       <p>
@@ -300,8 +301,10 @@
         Selected stake
         <strong id="selectedStake">$10</strong>
         Prize for the winner
-        <strong id="selectedPrize">$5</strong>
-        <div class="muted">11 entries are required to complete a pot.</div>
+        <strong id="selectedPrize">$5.00</strong>
+        <div class="muted">
+          11 entries are required to complete a pot.
+        </div>
       </div>
     </section>
 
@@ -481,6 +484,7 @@
 
       submitButton.disabled = true;
       submitButton.textContent = "Verifying purchase...";
+
       showStatus("Checking your MACO purchase. Please wait.");
 
       try {
@@ -499,13 +503,30 @@
           })
         });
 
-        const result = await response.json();
+        // Read the response as text first so HTML responses
+        // do not trigger the confusing "Unexpected token <" error.
+        const responseText = await response.text();
+
+        let result;
+
+        try {
+          result = JSON.parse(responseText);
+        } catch {
+          const preview = responseText
+            .replace(/\s+/g, " ")
+            .slice(0, 180);
+
+          throw new Error(
+            `Server returned a non-JSON response (HTTP ${response.status}). ` +
+            `Response: ${preview || "Empty response"}`
+          );
+        }
 
         if (!response.ok) {
           throw new Error(
             result.error ||
             result.message ||
-            "Entry verification failed."
+            `Entry verification failed (HTTP ${response.status}).`
           );
         }
 
@@ -519,7 +540,7 @@
 
         showStatus(
           result.message ||
-          "Your entry request was processed. Check the response below.",
+          "Your entry request was processed.",
           "success"
         );
 
@@ -528,19 +549,19 @@
             `Entry accepted! Entry ID: ${result.entry_id || result.entryId}`,
             "success"
           );
+
+          form.reset();
+          selectedNumber = null;
+
+          numberButtons.forEach(button => {
+            button.classList.remove("active");
+          });
+
+          updateStake(10);
         }
-
-        form.reset();
-
-        selectedNumber = null;
-
-        numberButtons.forEach(button => {
-          button.classList.remove("active");
-        });
-
-        updateStake(10);
-
       } catch (error) {
+        console.error("MACO Magic Number submission error:", error);
+
         showStatus(
           error.message ||
           "Something went wrong. Please try again.",
