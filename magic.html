@@ -48,7 +48,11 @@ main { max-width:760px; margin:28px auto; padding:0 15px 40px; }
   margin-bottom:18px;
 }
 h2 { margin-top:0; font-size:21px; }
-.stake-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.stake-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
 .stake-button,.number-button {
   background:#182235;
   color:var(--text);
@@ -65,7 +69,10 @@ h2 { margin-top:0; font-size:21px; }
   font-weight:400;
   margin-top:4px;
 }
-.stake-button.active { border:2px solid var(--accent); background:#12372f; }
+.stake-button.active {
+  border:2px solid var(--accent);
+  background:#12372f;
+}
 .prize-box {
   margin-top:16px;
   padding:15px;
@@ -74,12 +81,104 @@ h2 { margin-top:0; font-size:21px; }
   border:1px solid #1d604b;
   text-align:center;
 }
-.prize-box strong { display:block; color:var(--accent); font-size:30px; }
+.prize-box strong {
+  display:block;
+  color:var(--accent);
+  font-size:30px;
+}
 .muted { color:var(--muted); font-size:14px; }
-.number-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:9px; margin:14px 0; }
-.number-button { border-radius:10px; padding:14px 0; font-size:18px; }
-.number-button.active { background:var(--accent); color:#07120e; border-color:var(--accent); }
-label { display:block; margin:15px 0 6px; font-size:14px; font-weight:700; }
+
+.pot-list {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin-top:16px;
+}
+.pot-card {
+  padding:15px;
+  background:#0b1220;
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.pot-card-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.pot-name {
+  font-size:17px;
+  font-weight:800;
+}
+.pot-count {
+  color:var(--accent);
+  font-weight:800;
+  font-size:17px;
+}
+.progress-track {
+  height:9px;
+  background:#273449;
+  border-radius:20px;
+  overflow:hidden;
+  margin:12px 0 8px;
+}
+.progress-fill {
+  height:100%;
+  width:0;
+  background:var(--accent);
+  border-radius:20px;
+  transition:width .3s ease;
+}
+.pot-details {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  flex-wrap:wrap;
+  color:var(--muted);
+  font-size:13px;
+}
+.pot-status {
+  display:inline-block;
+  padding:2px 9px;
+  border-radius:20px;
+  background:#12372f;
+  color:var(--accent);
+  font-size:12px;
+  text-transform:capitalize;
+}
+.pot-status.closed,
+.pot-status.completed {
+  background:#30251b;
+  color:#ffc78a;
+}
+.pot-status.cancelled,
+.pot-status.rejected {
+  background:#301919;
+  color:var(--danger);
+}
+.number-grid {
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:9px;
+  margin:14px 0;
+}
+.number-button {
+  border-radius:10px;
+  padding:14px 0;
+  font-size:18px;
+}
+.number-button.active {
+  background:var(--accent);
+  color:#07120e;
+  border-color:var(--accent);
+}
+label {
+  display:block;
+  margin:15px 0 6px;
+  font-size:14px;
+  font-weight:700;
+}
 input {
   width:100%;
   padding:13px;
@@ -139,21 +238,37 @@ footer {
 
 <main>
 <section class="hero">
-  <h1>Choose Your Number.<br><span class="highlight">Win MACO Rewards.</span></h1>
+  <h1>Choose Your Number.<br>
+  <span class="highlight">Win MACO Rewards.</span></h1>
   <p>Make a qualifying new MACO purchase, choose a number from 1 to 10, and enter the game.</p>
 </section>
 
 <section class="panel">
   <h2>1. Choose Your Stake</h2>
-  <p class="muted">Each stake level has its own separate pot. The prize is 50% of the selected stake.</p>
+  <p class="muted">
+    Each stake level has its own separate pot.
+    The prize is 50% of the selected stake.
+  </p>
 
   <div class="stake-grid">
-    <button type="button" class="stake-button" data-stake="2">$2 <small>$1 prize</small></button>
-    <button type="button" class="stake-button" data-stake="5">$5 <small>$2.50 prize</small></button>
-    <button type="button" class="stake-button active" data-stake="10">$10 <small>$5 prize</small></button>
-    <button type="button" class="stake-button" data-stake="20">$20 <small>$10 prize</small></button>
-    <button type="button" class="stake-button" data-stake="50">$50 <small>$25 prize</small></button>
-    <button type="button" class="stake-button" data-stake="100">$100 <small>$50 prize</small></button>
+    <button type="button" class="stake-button" data-stake="2">
+      $2 <small>$1 prize</small>
+    </button>
+    <button type="button" class="stake-button" data-stake="5">
+      $5 <small>$2.50 prize</small>
+    </button>
+    <button type="button" class="stake-button active" data-stake="10">
+      $10 <small>$5 prize</small>
+    </button>
+    <button type="button" class="stake-button" data-stake="20">
+      $20 <small>$10 prize</small>
+    </button>
+    <button type="button" class="stake-button" data-stake="50">
+      $50 <small>$25 prize</small>
+    </button>
+    <button type="button" class="stake-button" data-stake="100">
+      $100 <small>$50 prize</small>
+    </button>
   </div>
 
   <div class="prize-box">
@@ -165,14 +280,32 @@ footer {
   </div>
 </section>
 
+<section class="panel" id="potProgressPanel">
+  <h2>Live Pot Progress</h2>
+  <p class="muted">
+    Follow the number of accepted entries in each pot.
+    Counts refresh automatically every 30 seconds.
+  </p>
+
+  <div id="potStatus" class="notice" role="status" aria-live="polite">
+    Loading pot entries...
+  </div>
+
+  <div id="potList" class="pot-list"></div>
+
+  <p class="muted" id="potUpdatedAt"></p>
+</section>
+
 <section class="panel">
   <h2>2. Enter the Game</h2>
+
   <div id="gameStatus" class="notice" role="status" aria-live="polite">
     Choose your stake, then submit your purchase details.
   </div>
 
   <form id="entryForm">
     <label>Choose a number from 1 to 10</label>
+
     <div class="number-grid">
       <button type="button" class="number-button" data-number="1">1</button>
       <button type="button" class="number-button" data-number="2">2</button>
@@ -187,17 +320,23 @@ footer {
     </div>
 
     <label for="wallet">Your Robinhood Chain wallet address</label>
-    <input id="wallet" type="text" placeholder="0x..." autocomplete="off" spellcheck="false" required>
+    <input id="wallet" type="text" placeholder="0x..."
+      autocomplete="off" spellcheck="false" required>
 
     <label for="transaction">New MACO purchase transaction hash</label>
-    <input id="transaction" type="text" placeholder="Paste transaction hash" autocomplete="off" spellcheck="false" required>
+    <input id="transaction" type="text"
+      placeholder="Paste transaction hash"
+      autocomplete="off" spellcheck="false" required>
 
-    <button id="submitButton" class="submit-button" type="submit">Submit Entry</button>
+    <button id="submitButton" class="submit-button" type="submit">
+      Submit Entry
+    </button>
   </form>
 
   <p class="muted">
-    Each entry requires a new qualifying MACO buy. Existing holdings alone do not qualify.
-    Your purchase must be indexed and verified before your entry can be accepted.
+    Each entry requires a new qualifying MACO buy. Existing holdings alone
+    do not qualify. Your purchase must be indexed and verified before your
+    entry can be accepted.
   </p>
 </section>
 
@@ -212,7 +351,10 @@ footer {
     <li>The closest guess to the winning number wins. Equally close guesses are decided by the earliest accepted entry.</li>
     <li>The winner's prize is 50% of the selected stake.</li>
   </ol>
-  <p class="muted">Entries are subject to transaction verification. Do not submit the same purchase transaction twice.</p>
+  <p class="muted">
+    Entries are subject to transaction verification.
+    Do not submit the same purchase transaction twice.
+  </p>
 </section>
 </main>
 
@@ -221,20 +363,39 @@ footer {
 <script>
 "use strict";
 
-const SUPABASE_URL = "https://gseachvpegtvnplsvfwo.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
-const ENTRY_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/maco-magic-entry`;
+const SUPABASE_URL =
+  "https://gseachvpegtvnplsvfwo.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
+
+const ENTRY_FUNCTION_URL =
+  `${SUPABASE_URL}/functions/v1/maco-magic-entry`;
+
+const PUBLIC_POTS_URL =
+  `${SUPABASE_URL}/rest/v1/maco_magic_public` +
+  "?select=pot_number,status,entry_count,prize_usd,payout_status,opened_at" +
+  "&order=pot_number.desc";
+
 const ALLOWED_STAKES = [2, 5, 10, 20, 50, 100];
+const ENTRIES_PER_POT = 11;
 
 let selectedStake = 10;
 let selectedNumber = null;
 let submitting = false;
 
-const stakeButtons = [...document.querySelectorAll(".stake-button")];
-const numberButtons = [...document.querySelectorAll(".number-button")];
+const stakeButtons =
+  [...document.querySelectorAll(".stake-button")];
+
+const numberButtons =
+  [...document.querySelectorAll(".number-button")];
+
 const form = document.getElementById("entryForm");
 const submitButton = document.getElementById("submitButton");
 const gameStatus = document.getElementById("gameStatus");
+const potStatus = document.getElementById("potStatus");
+const potList = document.getElementById("potList");
+const potUpdatedAt = document.getElementById("potUpdatedAt");
 
 function showStatus(message, type = "") {
   gameStatus.textContent = message;
@@ -245,27 +406,160 @@ function updateStake(stake) {
   if (!ALLOWED_STAKES.includes(stake)) return;
 
   selectedStake = stake;
+
   stakeButtons.forEach(button => {
-    button.classList.toggle("active", Number(button.dataset.stake) === stake);
+    button.classList.toggle(
+      "active",
+      Number(button.dataset.stake) === stake
+    );
   });
 
   document.getElementById("selectedStake").textContent = `$${stake}`;
-  document.getElementById("selectedPrize").textContent = `$${(stake / 2).toFixed(2)}`;
-  showStatus(`Selected $${stake} stake. Your new MACO purchase must be worth at least $${stake}.`);
+
+  document.getElementById("selectedPrize").textContent =
+    `$${(stake / 2).toFixed(2)}`;
+
+  showStatus(
+    `Selected $${stake} stake. Your new MACO purchase must be worth at least $${stake}.`
+  );
 }
 
 stakeButtons.forEach(button => {
-  button.addEventListener("click", () => updateStake(Number(button.dataset.stake)));
+  button.addEventListener("click", () => {
+    updateStake(Number(button.dataset.stake));
+  });
 });
 
 numberButtons.forEach(button => {
   button.addEventListener("click", () => {
     selectedNumber = Number(button.dataset.number);
+
     numberButtons.forEach(item => {
       item.classList.toggle("active", item === button);
     });
   });
 });
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]);
+}
+
+function renderPots(pots) {
+  potList.replaceChildren();
+
+  if (!Array.isArray(pots) || pots.length === 0) {
+    potStatus.textContent =
+      "No pots are currently available in the public view.";
+
+    potUpdatedAt.textContent =
+      "The page will check again automatically.";
+
+    return;
+  }
+
+  potStatus.textContent =
+    `${pots.length} pot record${pots.length === 1 ? "" : "s"} loaded.`;
+
+  pots.forEach(pot => {
+    const count = Math.max(
+      0,
+      Number.parseInt(pot.entry_count, 10) || 0
+    );
+
+    const progress = Math.min(
+      100,
+      (count / ENTRIES_PER_POT) * 100
+    );
+
+    const status = String(pot.status || "unknown");
+    const prize = Number(pot.prize_usd);
+
+    const card = document.createElement("article");
+    card.className = "pot-card";
+
+    card.innerHTML = `
+      <div class="pot-card-top">
+        <span class="pot-name">
+          Pot #${escapeHTML(pot.pot_number)}
+        </span>
+        <span class="pot-count">
+          ${count}/${ENTRIES_PER_POT} entries
+        </span>
+      </div>
+
+      <div class="progress-track"
+           role="progressbar"
+           aria-label="Pot entry progress"
+           aria-valuemin="0"
+           aria-valuemax="${ENTRIES_PER_POT}"
+           aria-valuenow="${Math.min(count, ENTRIES_PER_POT)}">
+        <div class="progress-fill"
+             style="width:${progress}%"></div>
+      </div>
+
+      <div class="pot-details">
+        <span>Prize: $${Number.isFinite(prize) ? prize.toFixed(2) : "—"}</span>
+        <span class="pot-status ${escapeHTML(status.toLowerCase())}">
+          ${escapeHTML(status)}
+        </span>
+      </div>
+    `;
+
+    potList.appendChild(card);
+  });
+
+  potUpdatedAt.textContent =
+    `Last updated: ${new Date().toLocaleTimeString()}`;
+}
+
+async function loadPotCounts() {
+  try {
+    const response = await fetch(PUBLIC_POTS_URL, {
+      method: "GET",
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        "Accept": "application/json"
+      },
+      cache: "no-store"
+    });
+
+    const text = await response.text();
+
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      throw new Error(
+        `Pot counts returned a non-JSON response (HTTP ${response.status}).`
+      );
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.message ||
+        data.error ||
+        `Unable to load pot counts (HTTP ${response.status}).`
+      );
+    }
+
+    renderPots(data);
+  } catch (error) {
+    console.error("MACO pot count loading error:", error);
+
+    potStatus.textContent =
+      "Unable to load pot counts. Retrying automatically.";
+
+    potStatus.className = "notice error";
+  }
+}
 
 async function readServerResponse(response) {
   const text = await response.text();
@@ -275,9 +569,10 @@ async function readServerResponse(response) {
     data = JSON.parse(text);
   } catch {
     const preview = text.replace(/\s+/g, " ").slice(0, 250);
+
     if (response.status === 404) {
       throw new Error(
-        "The game submission endpoint returned HTTP 404. Check that the existing Supabase function 'maco-magic-entry' is deployed at the configured project."
+        "The game submission endpoint returned HTTP 404. Check that the existing Supabase function maco-magic-entry is deployed."
       );
     }
 
@@ -289,14 +584,15 @@ async function readServerResponse(response) {
 
     throw new Error(
       `The server returned a non-JSON response (HTTP ${response.status}). ` +
-      `The request did not receive the expected game API response. ` +
       `Response preview: ${preview || "(empty response)"}`
     );
   }
 
   if (!response.ok) {
     throw new Error(
-      data.error || data.message || `Request failed (HTTP ${response.status}).`
+      data.error ||
+      data.message ||
+      `Request failed (HTTP ${response.status}).`
     );
   }
 
@@ -305,10 +601,14 @@ async function readServerResponse(response) {
 
 form.addEventListener("submit", async event => {
   event.preventDefault();
+
   if (submitting) return;
 
-  const walletAddress = document.getElementById("wallet").value.trim();
-  const transactionHash = document.getElementById("transaction").value.trim();
+  const walletAddress =
+    document.getElementById("wallet").value.trim();
+
+  const transactionHash =
+    document.getElementById("transaction").value.trim();
 
   if (!selectedNumber || selectedNumber < 1 || selectedNumber > 10) {
     showStatus("Please choose a number from 1 to 10.", "error");
@@ -333,6 +633,7 @@ form.addEventListener("submit", async event => {
   submitting = true;
   submitButton.disabled = true;
   submitButton.textContent = "Verifying purchase...";
+
   showStatus("Checking your MACO purchase. Please wait.");
 
   try {
@@ -354,21 +655,38 @@ form.addEventListener("submit", async event => {
     const result = await readServerResponse(response);
 
     if (result.success === false || result.error) {
-      throw new Error(result.error || result.message || "Your entry was not accepted.");
+      throw new Error(
+        result.error ||
+        result.message ||
+        "Your entry was not accepted."
+      );
     }
 
-    const entryId = result.entry_id || result.entryId || result.id;
+    const entryId =
+      result.entry_id || result.entryId || result.id;
 
     if (entryId) {
       showStatus(
         `Entry accepted. Entry ID: ${entryId}`,
         "success"
       );
+
       form.reset();
       selectedNumber = null;
-      numberButtons.forEach(button => button.classList.remove("active"));
+
+      numberButtons.forEach(button => {
+        button.classList.remove("active");
+      });
+
       updateStake(10);
-      showStatus(`Entry accepted. Entry ID: ${entryId}`, "success");
+
+      showStatus(
+        `Entry accepted. Entry ID: ${entryId}`,
+        "success"
+      );
+
+      // Refresh counts after a successful entry.
+      await loadPotCounts();
     } else if (
       result.success === true ||
       /accepted|verified|registered/i.test(result.message || "")
@@ -377,24 +695,33 @@ form.addEventListener("submit", async event => {
         result.message || "The server confirmed the entry.",
         "success"
       );
+
+      await loadPotCounts();
     } else {
-      // Do not claim success or invite a repeat submission when the
-      // response does not clearly confirm whether an entry was created.
       showStatus(
         "The server responded, but did not clearly confirm the entry. Do not resubmit yet. Check the server response/logs first.",
         "error"
       );
+
       console.error("Unconfirmed game response:", result);
     }
   } catch (error) {
     console.error("MACO Magic Number submission error:", error);
-    showStatus(error.message || "The request failed. Please try again later.", "error");
+
+    showStatus(
+      error.message || "The request failed. Please try again later.",
+      "error"
+    );
   } finally {
     submitting = false;
     submitButton.disabled = false;
     submitButton.textContent = "Submit Entry";
   }
 });
+
+// Load counts when the page opens, then refresh every 30 seconds.
+loadPotCounts();
+setInterval(loadPotCounts, 30000);
 </script>
 </body>
 </html>
