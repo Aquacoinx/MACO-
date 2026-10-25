@@ -1,575 +1,400 @@
  <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MACO Magic Number Game</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MACO Magic Number Game</title>
 
-  <style>
-    :root {
-      --bg: #080b12;
-      --panel: #111827;
-      --border: #273449;
-      --text: #f3f6fc;
-      --muted: #9aa8bd;
-      --accent: #39e6a5;
-      --danger: #ff7373;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, sans-serif;
-      line-height: 1.6;
-    }
-
-    header {
-      padding: 22px 16px;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .logo {
-      color: var(--accent);
-      font-size: 27px;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-
-    header p {
-      color: var(--muted);
-      margin: 4px 0 0;
-    }
-
-    main {
-      max-width: 760px;
-      margin: 28px auto;
-      padding: 0 15px 40px;
-    }
-
-    .hero {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
-    .hero h1 {
-      font-size: clamp(27px, 6vw, 42px);
-      line-height: 1.2;
-      margin-bottom: 12px;
-    }
-
-    .hero p {
-      color: var(--muted);
-      margin: 0 auto;
-      max-width: 540px;
-    }
-
-    .highlight {
-      color: var(--accent);
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 18px;
-    }
-
-    h2 {
-      margin-top: 0;
-      font-size: 21px;
-    }
-
-    .stake-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
-
-    .stake-button {
-      background: #182235;
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      padding: 13px 6px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .stake-button small {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 400;
-      margin-top: 4px;
-    }
-
-    .stake-button.active {
-      border: 2px solid var(--accent);
-      background: #12372f;
-    }
-
-    .prize-box {
-      margin-top: 16px;
-      padding: 15px;
-      border-radius: 12px;
-      background: #0b211d;
-      border: 1px solid #1d604b;
-      text-align: center;
-    }
-
-    .prize-box strong {
-      display: block;
-      color: var(--accent);
-      font-size: 30px;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .number-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 9px;
-      margin: 14px 0;
-    }
-
-    .number-button {
-      background: #182235;
-      color: white;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 0;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .number-button.active {
-      background: var(--accent);
-      color: #07120e;
-      border-color: var(--accent);
-    }
-
-    label {
-      display: block;
-      margin: 15px 0 6px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      background: #080e19;
-      color: white;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      outline: none;
-      font-size: 15px;
-    }
-
-    input:focus {
-      border-color: var(--accent);
-    }
-
-    .submit-button {
-      width: 100%;
-      margin-top: 20px;
-      padding: 15px;
-      border: none;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #06140e;
-      font-weight: 800;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .submit-button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
-    .notice {
-      padding: 12px;
-      border-radius: 9px;
-      background: #182235;
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 14px;
-      overflow-wrap: anywhere;
-      white-space: pre-wrap;
-    }
-
-    .notice.success {
-      color: var(--accent);
-      background: #0b211d;
-    }
-
-    .notice.error {
-      color: var(--danger);
-      background: #301919;
-    }
-
-    li {
-      margin-bottom: 9px;
-      color: #d1d9e7;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: var(--muted);
-      font-size: 13px;
-      border-top: 1px solid var(--border);
-    }
-
-    @media (max-width: 420px) {
-      .stake-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .panel {
-        padding: 15px;
-      }
-    }
-  </style>
+<style>
+:root {
+  --bg:#080b12;
+  --panel:#111827;
+  --border:#273449;
+  --text:#f3f6fc;
+  --muted:#9aa8bd;
+  --accent:#39e6a5;
+  --danger:#ff7373;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  line-height:1.6;
+}
+header {
+  padding:22px 16px;
+  text-align:center;
+  border-bottom:1px solid var(--border);
+}
+.logo {
+  color:var(--accent);
+  font-size:27px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+header p { color:var(--muted); margin:4px 0 0; }
+main { max-width:760px; margin:28px auto; padding:0 15px 40px; }
+.hero { text-align:center; margin-bottom:25px; }
+.hero h1 { font-size:clamp(27px,6vw,42px); line-height:1.2; }
+.hero p { color:var(--muted); max-width:540px; margin:auto; }
+.highlight { color:var(--accent); }
+.panel {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:18px;
+}
+h2 { margin-top:0; font-size:21px; }
+.stake-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.stake-button,.number-button {
+  background:#182235;
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:11px;
+  cursor:pointer;
+  font-weight:700;
+}
+.stake-button { padding:13px 6px; font-size:16px; }
+.stake-button small {
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:400;
+  margin-top:4px;
+}
+.stake-button.active { border:2px solid var(--accent); background:#12372f; }
+.prize-box {
+  margin-top:16px;
+  padding:15px;
+  border-radius:12px;
+  background:#0b211d;
+  border:1px solid #1d604b;
+  text-align:center;
+}
+.prize-box strong { display:block; color:var(--accent); font-size:30px; }
+.muted { color:var(--muted); font-size:14px; }
+.number-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:9px; margin:14px 0; }
+.number-button { border-radius:10px; padding:14px 0; font-size:18px; }
+.number-button.active { background:var(--accent); color:#07120e; border-color:var(--accent); }
+label { display:block; margin:15px 0 6px; font-size:14px; font-weight:700; }
+input {
+  width:100%;
+  padding:13px;
+  background:#080e19;
+  color:white;
+  border:1px solid var(--border);
+  border-radius:9px;
+  outline:none;
+  font-size:15px;
+}
+input:focus { border-color:var(--accent); }
+.submit-button {
+  width:100%;
+  margin-top:20px;
+  padding:15px;
+  border:0;
+  border-radius:10px;
+  background:var(--accent);
+  color:#06140e;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
+}
+.submit-button:disabled { opacity:.55; cursor:not-allowed; }
+.notice {
+  padding:12px;
+  border-radius:9px;
+  background:#182235;
+  color:var(--muted);
+  font-size:14px;
+  margin-bottom:14px;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+}
+.notice.success { color:var(--accent); background:#0b211d; }
+.notice.error { color:var(--danger); background:#301919; }
+li { margin-bottom:9px; color:#d1d9e7; }
+footer {
+  text-align:center;
+  padding:20px;
+  color:var(--muted);
+  font-size:13px;
+  border-top:1px solid var(--border);
+}
+@media(max-width:420px) {
+  .stake-grid { grid-template-columns:repeat(2,1fr); }
+  .panel { padding:15px; }
+}
+</style>
 </head>
 
 <body>
-  <header>
-    <div class="logo">MACO</div>
-    <p>Magic Number Game</p>
-  </header>
+<header>
+  <div class="logo">MACO</div>
+  <p>Magic Number Game</p>
+</header>
 
-  <main>
-    <section class="hero">
-      <h1>
-        Choose Your Number.<br>
-        <span class="highlight">Win MACO Rewards.</span>
-      </h1>
-      <p>
-        Make a qualifying new MACO purchase, choose a number from
-        1 to 10, and enter the game.
-      </p>
-    </section>
+<main>
+<section class="hero">
+  <h1>Choose Your Number.<br><span class="highlight">Win MACO Rewards.</span></h1>
+  <p>Make a qualifying new MACO purchase, choose a number from 1 to 10, and enter the game.</p>
+</section>
 
-    <section class="panel">
-      <h2>1. Choose Your Stake</h2>
-      <p class="muted">
-        Each stake level has its own separate pot. The prize is 50%
-        of the selected stake.
-      </p>
+<section class="panel">
+  <h2>1. Choose Your Stake</h2>
+  <p class="muted">Each stake level has its own separate pot. The prize is 50% of the selected stake.</p>
 
-      <div class="stake-grid">
-        <button type="button" class="stake-button" data-stake="2">
-          $2 <small>$1 prize</small>
-        </button>
+  <div class="stake-grid">
+    <button type="button" class="stake-button" data-stake="2">$2 <small>$1 prize</small></button>
+    <button type="button" class="stake-button" data-stake="5">$5 <small>$2.50 prize</small></button>
+    <button type="button" class="stake-button active" data-stake="10">$10 <small>$5 prize</small></button>
+    <button type="button" class="stake-button" data-stake="20">$20 <small>$10 prize</small></button>
+    <button type="button" class="stake-button" data-stake="50">$50 <small>$25 prize</small></button>
+    <button type="button" class="stake-button" data-stake="100">$100 <small>$50 prize</small></button>
+  </div>
 
-        <button type="button" class="stake-button" data-stake="5">
-          $5 <small>$2.50 prize</small>
-        </button>
+  <div class="prize-box">
+    Selected stake
+    <strong id="selectedStake">$10</strong>
+    Prize for the winner
+    <strong id="selectedPrize">$5.00</strong>
+    <div class="muted">11 entries are required to complete a pot.</div>
+  </div>
+</section>
 
-        <button type="button" class="stake-button active" data-stake="10">
-          $10 <small>$5 prize</small>
-        </button>
+<section class="panel">
+  <h2>2. Enter the Game</h2>
+  <div id="gameStatus" class="notice" role="status" aria-live="polite">
+    Choose your stake, then submit your purchase details.
+  </div>
 
-        <button type="button" class="stake-button" data-stake="20">
-          $20 <small>$10 prize</small>
-        </button>
+  <form id="entryForm">
+    <label>Choose a number from 1 to 10</label>
+    <div class="number-grid">
+      <button type="button" class="number-button" data-number="1">1</button>
+      <button type="button" class="number-button" data-number="2">2</button>
+      <button type="button" class="number-button" data-number="3">3</button>
+      <button type="button" class="number-button" data-number="4">4</button>
+      <button type="button" class="number-button" data-number="5">5</button>
+      <button type="button" class="number-button" data-number="6">6</button>
+      <button type="button" class="number-button" data-number="7">7</button>
+      <button type="button" class="number-button" data-number="8">8</button>
+      <button type="button" class="number-button" data-number="9">9</button>
+      <button type="button" class="number-button" data-number="10">10</button>
+    </div>
 
-        <button type="button" class="stake-button" data-stake="50">
-          $50 <small>$25 prize</small>
-        </button>
+    <label for="wallet">Your Robinhood Chain wallet address</label>
+    <input id="wallet" type="text" placeholder="0x..." autocomplete="off" spellcheck="false" required>
 
-        <button type="button" class="stake-button" data-stake="100">
-          $100 <small>$50 prize</small>
-        </button>
-      </div>
+    <label for="transaction">New MACO purchase transaction hash</label>
+    <input id="transaction" type="text" placeholder="Paste transaction hash" autocomplete="off" spellcheck="false" required>
 
-      <div class="prize-box">
-        Selected stake
-        <strong id="selectedStake">$10</strong>
-        Prize for the winner
-        <strong id="selectedPrize">$5.00</strong>
-        <div class="muted">
-          11 entries are required to complete a pot.
-        </div>
-      </div>
-    </section>
+    <button id="submitButton" class="submit-button" type="submit">Submit Entry</button>
+  </form>
 
-    <section class="panel">
-      <h2>2. Enter the Game</h2>
+  <p class="muted">
+    Each entry requires a new qualifying MACO buy. Existing holdings alone do not qualify.
+    Your purchase must be indexed and verified before your entry can be accepted.
+  </p>
+</section>
 
-      <div id="gameStatus" class="notice">
-        Choose your stake, then submit your purchase details.
-      </div>
+<section class="panel">
+  <h2>How It Works</h2>
+  <ol>
+    <li>Select one of the six stake levels.</li>
+    <li>Make a new MACO purchase worth at least the selected stake.</li>
+    <li>Choose a number between 1 and 10.</li>
+    <li>Submit your wallet address and purchase transaction hash.</li>
+    <li>Each stake level has its own pot of 11 entries.</li>
+    <li>The closest guess to the winning number wins. Equally close guesses are decided by the earliest accepted entry.</li>
+    <li>The winner's prize is 50% of the selected stake.</li>
+  </ol>
+  <p class="muted">Entries are subject to transaction verification. Do not submit the same purchase transaction twice.</p>
+</section>
+</main>
 
-      <form id="entryForm">
-        <label>Choose a number from 1 to 10</label>
+<footer>MACO Magic Number Game</footer>
 
-        <div class="number-grid">
-          <button type="button" class="number-button" data-number="1">1</button>
-          <button type="button" class="number-button" data-number="2">2</button>
-          <button type="button" class="number-button" data-number="3">3</button>
-          <button type="button" class="number-button" data-number="4">4</button>
-          <button type="button" class="number-button" data-number="5">5</button>
-          <button type="button" class="number-button" data-number="6">6</button>
-          <button type="button" class="number-button" data-number="7">7</button>
-          <button type="button" class="number-button" data-number="8">8</button>
-          <button type="button" class="number-button" data-number="9">9</button>
-          <button type="button" class="number-button" data-number="10">10</button>
-        </div>
+<script>
+"use strict";
 
-        <label for="wallet">Your Robinhood Chain wallet address</label>
-        <input
-          id="wallet"
-          type="text"
-          placeholder="0x..."
-          autocomplete="off"
-          required
-        >
+const SUPABASE_URL = "https://gseachvpegtvnplsvfwo.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
+const ENTRY_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/maco-magic-entry`;
+const ALLOWED_STAKES = [2, 5, 10, 20, 50, 100];
 
-        <label for="transaction">New MACO purchase transaction hash</label>
-        <input
-          id="transaction"
-          type="text"
-          placeholder="Paste transaction hash"
-          autocomplete="off"
-          required
-        >
+let selectedStake = 10;
+let selectedNumber = null;
+let submitting = false;
 
-        <button id="submitButton" class="submit-button" type="submit">
-          Submit Entry
-        </button>
-      </form>
+const stakeButtons = [...document.querySelectorAll(".stake-button")];
+const numberButtons = [...document.querySelectorAll(".number-button")];
+const form = document.getElementById("entryForm");
+const submitButton = document.getElementById("submitButton");
+const gameStatus = document.getElementById("gameStatus");
 
-      <p class="muted">
-        Each entry requires a new qualifying MACO buy. Existing holdings
-        alone do not qualify. Your purchase must be indexed and verified
-        before your entry can be accepted.
-      </p>
-    </section>
+function showStatus(message, type = "") {
+  gameStatus.textContent = message;
+  gameStatus.className = "notice" + (type ? " " + type : "");
+}
 
-    <section class="panel">
-      <h2>How It Works</h2>
-      <ol>
-        <li>Select one of the six stake levels.</li>
-        <li>Make a new MACO purchase worth at least the selected stake.</li>
-        <li>Choose a number between 1 and 10.</li>
-        <li>Submit your wallet address and purchase transaction hash.</li>
-        <li>Each stake level has its own pot of 11 entries.</li>
-        <li>The closest guess to the winning number wins. If guesses are equally close, the earliest accepted entry wins.</li>
-        <li>The winner's prize is 50% of the selected stake.</li>
-      </ol>
-      <p class="muted">
-        Entries are subject to transaction verification and the game's
-        published rules. Do not submit the same purchase transaction twice.
-      </p>
-    </section>
-  </main>
+function updateStake(stake) {
+  if (!ALLOWED_STAKES.includes(stake)) return;
 
-  <footer>
-    MACO Magic Number Game
-  </footer>
+  selectedStake = stake;
+  stakeButtons.forEach(button => {
+    button.classList.toggle("active", Number(button.dataset.stake) === stake);
+  });
 
-  <script>
-    const SUPABASE_URL =
-      "https://gseachvpegtvnplsvfwo.supabase.co";
+  document.getElementById("selectedStake").textContent = `$${stake}`;
+  document.getElementById("selectedPrize").textContent = `$${(stake / 2).toFixed(2)}`;
+  showStatus(`Selected $${stake} stake. Your new MACO purchase must be worth at least $${stake}.`);
+}
 
-    const SUPABASE_ANON_KEY =
-      "sb_publishable_AfoEXQKM6c8PIEsRoHN4ww_RKnLHwzT";
+stakeButtons.forEach(button => {
+  button.addEventListener("click", () => updateStake(Number(button.dataset.stake)));
+});
 
-    const ENTRY_FUNCTION_URL =
-      `${SUPABASE_URL}/functions/v1/maco-magic-entry`;
+numberButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    selectedNumber = Number(button.dataset.number);
+    numberButtons.forEach(item => {
+      item.classList.toggle("active", item === button);
+    });
+  });
+});
 
-    const ALLOWED_STAKES = [2, 5, 10, 20, 50, 100];
+async function readServerResponse(response) {
+  const text = await response.text();
+  let data;
 
-    let selectedStake = 10;
-    let selectedNumber = null;
-
-    const stakeButtons =
-      document.querySelectorAll(".stake-button");
-
-    const numberButtons =
-      document.querySelectorAll(".number-button");
-
-    const form = document.getElementById("entryForm");
-    const submitButton = document.getElementById("submitButton");
-    const gameStatus = document.getElementById("gameStatus");
-
-    function showStatus(message, type = "") {
-      gameStatus.textContent = message;
-      gameStatus.className = "notice";
-
-      if (type) {
-        gameStatus.classList.add(type);
-      }
-    }
-
-    function updateStake(stake) {
-      if (!ALLOWED_STAKES.includes(stake)) {
-        return;
-      }
-
-      selectedStake = stake;
-
-      stakeButtons.forEach(button => {
-        button.classList.toggle(
-          "active",
-          Number(button.dataset.stake) === stake
-        );
-      });
-
-      document.getElementById("selectedStake").textContent =
-        `$${stake}`;
-
-      document.getElementById("selectedPrize").textContent =
-        `$${(stake * 0.5).toFixed(2)}`;
-
-      showStatus(
-        `Selected $${stake} stake. Make a new MACO buy of at least $${stake}.`
+  try {
+    data = JSON.parse(text);
+  } catch {
+    const preview = text.replace(/\s+/g, " ").slice(0, 250);
+    if (response.status === 404) {
+      throw new Error(
+        "The game submission endpoint returned HTTP 404. Check that the existing Supabase function 'maco-magic-entry' is deployed at the configured project."
       );
     }
 
-    stakeButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        updateStake(Number(button.dataset.stake));
-      });
+    if (response.status === 401 || response.status === 403) {
+      throw new Error(
+        `The server rejected the request (HTTP ${response.status}). Check the function's authentication settings.`
+      );
+    }
+
+    throw new Error(
+      `The server returned a non-JSON response (HTTP ${response.status}). ` +
+      `The request did not receive the expected game API response. ` +
+      `Response preview: ${preview || "(empty response)"}`
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(
+      data.error || data.message || `Request failed (HTTP ${response.status}).`
+    );
+  }
+
+  return data;
+}
+
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+  if (submitting) return;
+
+  const walletAddress = document.getElementById("wallet").value.trim();
+  const transactionHash = document.getElementById("transaction").value.trim();
+
+  if (!selectedNumber || selectedNumber < 1 || selectedNumber > 10) {
+    showStatus("Please choose a number from 1 to 10.", "error");
+    return;
+  }
+
+  if (!/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
+    showStatus("Enter a valid Robinhood Chain wallet address.", "error");
+    return;
+  }
+
+  if (!/^0x[a-fA-F0-9]{64}$/.test(transactionHash)) {
+    showStatus("Enter a valid transaction hash.", "error");
+    return;
+  }
+
+  if (!ALLOWED_STAKES.includes(selectedStake)) {
+    showStatus("Please choose a valid stake.", "error");
+    return;
+  }
+
+  submitting = true;
+  submitButton.disabled = true;
+  submitButton.textContent = "Verifying purchase...";
+  showStatus("Checking your MACO purchase. Please wait.");
+
+  try {
+    const response = await fetch(ENTRY_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({
+        wallet_address: walletAddress,
+        transaction_hash: transactionHash,
+        chosen_number: selectedNumber,
+        stake_usd: selectedStake
+      })
     });
 
-    numberButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        selectedNumber = Number(button.dataset.number);
+    const result = await readServerResponse(response);
 
-        numberButtons.forEach(item => {
-          item.classList.toggle("active", item === button);
-        });
-      });
-    });
+    if (result.success === false || result.error) {
+      throw new Error(result.error || result.message || "Your entry was not accepted.");
+    }
 
-    form.addEventListener("submit", async event => {
-      event.preventDefault();
+    const entryId = result.entry_id || result.entryId || result.id;
 
-      const walletAddress =
-        document.getElementById("wallet").value.trim();
-
-      const transactionHash =
-        document.getElementById("transaction").value.trim();
-
-      if (!selectedNumber) {
-        showStatus("Please choose a number from 1 to 10.", "error");
-        return;
-      }
-
-      if (!/^0x[a-fA-F0-9]{40}$/.test(walletAddress)) {
-        showStatus("Enter a valid wallet address.", "error");
-        return;
-      }
-
-      if (!/^0x[a-fA-F0-9]{64}$/.test(transactionHash)) {
-        showStatus("Enter a valid transaction hash.", "error");
-        return;
-      }
-
-      submitButton.disabled = true;
-      submitButton.textContent = "Verifying purchase...";
-      showStatus("Checking your MACO purchase. Please wait.");
-
-      try {
-        const response = await fetch(ENTRY_FUNCTION_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
-          },
-          body: JSON.stringify({
-            wallet_address: walletAddress,
-            transaction_hash: transactionHash,
-            chosen_number: selectedNumber,
-            stake_usd: selectedStake
-          })
-        });
-
-        // Read the response without assuming it is JSON.
-        const responseText = await response.text();
-
-        let result;
-
-        try {
-          result = JSON.parse(responseText);
-        } catch {
-          const preview = responseText
-            .replace(/\s+/g, " ")
-            .slice(0, 300);
-
-          throw new Error(
-            `The server returned HTML or invalid JSON (HTTP ${response.status}). ` +
-            `Response: ${preview || "Empty response"}`
-          );
-        }
-
-        if (!response.ok) {
-          throw new Error(
-            result.error ||
-            result.message ||
-            `Entry verification failed (HTTP ${response.status}).`
-          );
-        }
-
-        if (result.success === false) {
-          throw new Error(
-            result.error ||
-            result.message ||
-            "Your entry was not accepted."
-          );
-        }
-
-        if (result.entry_id || result.entryId) {
-          showStatus(
-            `Entry accepted! Entry ID: ${result.entry_id || result.entryId}`,
-            "success"
-          );
-
-          form.reset();
-          selectedNumber = null;
-
-          numberButtons.forEach(button => {
-            button.classList.remove("active");
-          });
-
-          updateStake(10);
-        } else {
-          showStatus(
-            result.message ||
-            "The server responded, but no entry ID was returned. Check the response before submitting again.",
-            "success"
-          );
-        }
-      } catch (error) {
-        console.error("MACO Magic Number submission error:", error);
-
-        showStatus(
-          error.message ||
-          "Something went wrong. Please try again.",
-          "error"
-        );
-      } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = "Submit Entry";
-      }
-    });
-  </script>
+    if (entryId) {
+      showStatus(
+        `Entry accepted. Entry ID: ${entryId}`,
+        "success"
+      );
+      form.reset();
+      selectedNumber = null;
+      numberButtons.forEach(button => button.classList.remove("active"));
+      updateStake(10);
+      showStatus(`Entry accepted. Entry ID: ${entryId}`, "success");
+    } else if (
+      result.success === true ||
+      /accepted|verified|registered/i.test(result.message || "")
+    ) {
+      showStatus(
+        result.message || "The server confirmed the entry.",
+        "success"
+      );
+    } else {
+      // Do not claim success or invite a repeat submission when the
+      // response does not clearly confirm whether an entry was created.
+      showStatus(
+        "The server responded, but did not clearly confirm the entry. Do not resubmit yet. Check the server response/logs first.",
+        "error"
+      );
+      console.error("Unconfirmed game response:", result);
+    }
+  } catch (error) {
+    console.error("MACO Magic Number submission error:", error);
+    showStatus(error.message || "The request failed. Please try again later.", "error");
+  } finally {
+    submitting = false;
+    submitButton.disabled = false;
+    submitButton.textContent = "Submit Entry";
+  }
+});
+</script>
 </body>
 </html>
