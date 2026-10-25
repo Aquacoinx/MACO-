@@ -484,7 +484,6 @@
 
       submitButton.disabled = true;
       submitButton.textContent = "Verifying purchase...";
-
       showStatus("Checking your MACO purchase. Please wait.");
 
       try {
@@ -503,8 +502,7 @@
           })
         });
 
-        // Read the response as text first so HTML responses
-        // do not trigger the confusing "Unexpected token <" error.
+        // Read the response without assuming it is JSON.
         const responseText = await response.text();
 
         let result;
@@ -514,10 +512,10 @@
         } catch {
           const preview = responseText
             .replace(/\s+/g, " ")
-            .slice(0, 180);
+            .slice(0, 300);
 
           throw new Error(
-            `Server returned a non-JSON response (HTTP ${response.status}). ` +
+            `The server returned HTML or invalid JSON (HTTP ${response.status}). ` +
             `Response: ${preview || "Empty response"}`
           );
         }
@@ -538,12 +536,6 @@
           );
         }
 
-        showStatus(
-          result.message ||
-          "Your entry request was processed.",
-          "success"
-        );
-
         if (result.entry_id || result.entryId) {
           showStatus(
             `Entry accepted! Entry ID: ${result.entry_id || result.entryId}`,
@@ -558,6 +550,12 @@
           });
 
           updateStake(10);
+        } else {
+          showStatus(
+            result.message ||
+            "The server responded, but no entry ID was returned. Check the response before submitting again.",
+            "success"
+          );
         }
       } catch (error) {
         console.error("MACO Magic Number submission error:", error);
