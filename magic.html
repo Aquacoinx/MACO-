@@ -1,9 +1,13 @@
- <!DOCTYPE html>
+ 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MACO Magic Number Game</title>
+
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#080b12">
 
 <style>
 :root {
@@ -292,7 +296,6 @@ footer {
   </div>
 
   <div id="potList" class="pot-list"></div>
-
   <p class="muted" id="potUpdatedAt"></p>
 </section>
 
@@ -685,7 +688,6 @@ form.addEventListener("submit", async event => {
         "success"
       );
 
-      // Refresh counts after a successful entry.
       await loadPotCounts();
     } else if (
       result.success === true ||
@@ -719,9 +721,22 @@ form.addEventListener("submit", async event => {
   }
 });
 
-// Load counts when the page opens, then refresh every 30 seconds.
 loadPotCounts();
 setInterval(loadPotCounts, 30000);
 </script>
+
+<!-- MACO app installation support -->
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js", {
+      scope: "/magic.html"
+    }).catch(error => {
+      console.error("MACO app setup:", error);
+    });
+  });
+}
+</script>
+
 </body>
 </html>
