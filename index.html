@@ -1,15 +1,355 @@
  <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MACO Volume Arena</title>
-  <meta http-equiv="refresh" content="0;url=index-4.html">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MACO | AquaCoins Ecosystem</title>
+<meta name="description" content="Explore the MACO and AquaCoins ecosystem. Trade, play, participate, build and earn.">
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #07111f;
+  color: #ffffff;
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  width: 100%;
+  max-width: 1050px;
+  margin: auto;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #1e3046;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: 900;
+  color: #42baff;
+  letter-spacing: 1px;
+}
+
+.header-tag {
+  font-size: 11px;
+  color: #a8bfd5;
+}
+
+.hero {
+  text-align: center;
+  padding: 55px 10px 40px;
+}
+
+.hero h1 {
+  font-size: clamp(32px, 7vw, 54px);
+  line-height: 1.15;
+  margin-bottom: 15px;
+}
+
+.hero h1 span {
+  color: #42baff;
+}
+
+.hero p {
+  max-width: 600px;
+  margin: auto;
+  color: #a9bdd1;
+  font-size: 15px;
+}
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 25px;
+}
+
+.button {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 9px;
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+}
+
+.primary {
+  background: #168fe0;
+  color: white;
+}
+
+.secondary {
+  border: 1px solid #36516d;
+  color: white;
+}
+
+.section-title {
+  margin: 30px 0 18px;
+  font-size: 22px;
+}
+
+.section-subtitle {
+  color: #91a9c0;
+  font-size: 13px;
+  margin-top: -12px;
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.card {
+  background: #101f31;
+  border: 1px solid #203851;
+  border-radius: 14px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  min-height: 205px;
+  transition: 0.2s;
+}
+
+.card:hover {
+  border-color: #42baff;
+  transform: translateY(-3px);
+}
+
+.card-icon {
+  font-size: 29px;
+  margin-bottom: 12px;
+}
+
+.card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.card p {
+  font-size: 13px;
+  color: #a8bbce;
+  flex-grow: 1;
+}
+
+.card-link {
+  display: inline-block;
+  margin-top: 18px;
+  color: #42baff;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.featured {
+  border-color: #168fe0;
+  background: linear-gradient(145deg, #102c47, #101f31);
+}
+
+.community {
+  margin-top: 35px;
+  padding: 25px;
+  text-align: center;
+  border: 1px solid #203851;
+  border-radius: 14px;
+  background: #101f31;
+}
+
+.community p {
+  color: #a8bbce;
+  font-size: 14px;
+  margin: 8px 0 18px;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.social-links a {
+  padding: 10px 17px;
+  border: 1px solid #36516d;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+footer {
+  text-align: center;
+  padding: 30px 10px;
+  margin-top: 30px;
+  border-top: 1px solid #1e3046;
+  color: #8199b0;
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding-top: 40px;
+  }
+
+  .card {
+    min-height: 180px;
+  }
+
+  header {
+    gap: 10px;
+  }
+}
+</style>
 </head>
+
 <body>
-  <p>Opening MACO Volume Arena...</p>
-  <script>
-    window.location.replace("index-4.html");
-  </script>
+
+<div class="container">
+
+<header>
+  <div class="logo">MACO</div>
+  <div class="header-tag">AQUACOINX ECOSYSTEM</div>
+</header>
+
+<section class="hero">
+  <h1>Welcome to the<br><span>MACO Ecosystem</span></h1>
+
+  <p>
+    One ecosystem. Multiple ways to participate.
+    Explore trading competitions, games, community rewards
+    and real-world digital utilities.
+  </p>
+
+  <div class="hero-buttons">
+    <a class="button primary" href="index-4.html">
+      Explore MACO
+    </a>
+
+    <a class="button secondary" href="https://aquameme.space">
+      Explore AquaCoins
+    </a>
+  </div>
+</section>
+
+<h2 class="section-title">Explore Our Platforms</h2>
+<p class="section-subtitle">
+  Choose a platform and get started.
+</p>
+
+<div class="grid">
+
+  <a class="card featured" href="index-4.html">
+    <div class="card-icon">📊</div>
+    <h3>MACO Volume Arena</h3>
+    <p>
+      Register your wallet, compete through recorded
+      trading volume and invite other traders.
+    </p>
+    <span class="card-link">Enter Volume Arena →</span>
+  </a>
+
+  <a class="card" href="guide.html">
+    <div class="card-icon">📖</div>
+    <h3>Participant Guide</h3>
+    <p>
+      Learn how to register, trade, use referral codes
+      and participate in the MACO Volume Arena.
+    </p>
+    <span class="card-link">Read the Guide →</span>
+  </a>
+
+  <a class="card" href="magic.html">
+    <div class="card-icon">🎯</div>
+    <h3>Magic Number Game</h3>
+    <p>
+      Choose your stake, select your number and
+      compete for rewards in the MACO number game.
+    </p>
+    <span class="card-link">Play Magic Number →</span>
+  </a>
+
+  <a class="card" href="ambassador.html">
+    <div class="card-icon">🤝</div>
+    <h3>Ambassador Program</h3>
+    <p>
+      Join the community ambassador program,
+      complete tasks and participate in rewards.
+    </p>
+    <span class="card-link">Become an Ambassador →</span>
+  </a>
+
+  <a class="card featured" href="https://aquameme.space">
+    <div class="card-icon">🌊</div>
+    <h3>AquaCoins Utilities</h3>
+    <p>
+      Explore the AquaCoins ecosystem, including
+      digital payments, airtime, bills and marketplace services.
+    </p>
+    <span class="card-link">Explore AquaCoins →</span>
+  </a>
+
+  <a class="card" href="https://linktr.ee/aquacoins">
+    <div class="card-icon">🌐</div>
+    <h3>Official Resources</h3>
+    <p>
+      Find our official social media accounts,
+      Telegram community and project resources.
+    </p>
+    <span class="card-link">View Official Links →</span>
+  </a>
+
+</div>
+
+<section class="community">
+  <h2>Be Part of the Ecosystem</h2>
+  <p>
+    Follow our updates, connect with the community
+    and discover what's being built.
+  </p>
+
+  <div class="social-links">
+    <a href="https://x.com/aquacoinx" target="_blank" rel="noopener">
+      X / Twitter
+    </a>
+
+    <a href="https://t.me/aquacoinx" target="_blank" rel="noopener">
+      Telegram
+    </a>
+
+    <a href="https://linktr.ee/aquacoins" target="_blank" rel="noopener">
+      All Links
+    </a>
+  </div>
+</section>
+
+<footer>
+  <p>MACO × AquaCoins</p>
+  <p>Learn. Earn. Build. Hold.</p>
+  <p>© 2026 AquaCoins Ecosystem. All rights reserved.</p>
+</footer>
+
+</div>
+
 </body>
 </html>
