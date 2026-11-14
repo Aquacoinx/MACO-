@@ -1,0 +1,21 @@
+
+{
+  "id": "/magic.html",
+  "name": "MACO Magic Number Game",
+  "short_name": "MACO Magic",
+  "description": "Choose your number and enter the MACO Magic Number Game.",
+  "start_url": "/magic.html",
+  "scope": "/magic.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080b12",
+  "theme_color": "#080b12",
+  "icons": [
+    {
+      "src": "/icons/maco-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
